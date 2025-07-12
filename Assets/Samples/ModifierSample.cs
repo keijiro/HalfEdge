@@ -28,27 +28,9 @@ public class ModifierSample : MonoBehaviour
     [SerializeField] float smoothingFactor = 0.5f;
     [SerializeField] int smoothIterations = 1;
     
-    [SerializeField] Material material;
-    
     void Start()
     {
-        SetupMeshComponents();
         GenerateMesh();
-    }
-    
-    void SetupMeshComponents()
-    {
-        if (GetComponent<MeshFilter>() == null)
-            gameObject.AddComponent<MeshFilter>();
-        
-        if (GetComponent<MeshRenderer>() == null)
-        {
-            var renderer = gameObject.AddComponent<MeshRenderer>();
-            if (material != null)
-                renderer.material = material;
-            else
-                renderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        }
     }
     
     void GenerateMesh()
@@ -87,16 +69,5 @@ public class ModifierSample : MonoBehaviour
         
         var unityMesh = meshData.ToUnityMesh();
         GetComponent<MeshFilter>().mesh = unityMesh;
-    }
-    
-    void OnValidate()
-    {
-        if (Application.isPlaying)
-        {
-            subdivisions = Mathf.Max(0, subdivisions);
-            smoothIterations = Mathf.Max(1, smoothIterations);
-            smoothingFactor = Mathf.Clamp01(smoothingFactor);
-            GenerateMesh();
-        }
     }
 }

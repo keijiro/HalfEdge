@@ -8,29 +8,12 @@ public class AnimatedMeshSample : MonoBehaviour
 {
     [SerializeField] float animationSpeed = 1f;
     [SerializeField] float maxTwistAngle = 90f;
-    [SerializeField] Material material;
     
     MeshData baseMeshData;
     
     void Start()
     {
-        SetupMeshComponents();
         GenerateBaseMesh();
-    }
-    
-    void SetupMeshComponents()
-    {
-        if (GetComponent<MeshFilter>() == null)
-            gameObject.AddComponent<MeshFilter>();
-        
-        if (GetComponent<MeshRenderer>() == null)
-        {
-            var renderer = gameObject.AddComponent<MeshRenderer>();
-            if (material != null)
-                renderer.material = material;
-            else
-                renderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        }
     }
     
     void GenerateBaseMesh()
