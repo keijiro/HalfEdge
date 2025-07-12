@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "yamu": {
+      "command": "node",
+      "args": ["Library/PackageCache/jp.keijiro.yamu@3ac8c1587976/Node/mcp-server.js"]
+    }
+  }
+}
