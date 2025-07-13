@@ -25,14 +25,19 @@ namespace HalfEdgeMesh.Modifiers
                 var axisProjection = math.dot(relativePos, axis) * axis;
                 var perpendicular = relativePos - axisProjection;
                 
-                var distance = math.length(axisProjection);
+                // Use signed distance along the axis to determine twist amount
+                var signedDistance = math.dot(relativePos, axis);
                 var twistAmount = angle;
                 
                 if (falloffDistance > 0f)
                 {
-                    var falloff = math.saturate(distance / falloffDistance);
+                    var normalizedDistance = math.abs(signedDistance) / falloffDistance;
+                    var falloff = 1f - math.saturate(normalizedDistance);
                     twistAmount *= falloff;
                 }
+                
+                // Apply twist proportional to distance along the axis
+                twistAmount *= signedDistance;
                 
                 var rotation = quaternion.AxisAngle(axis, twistAmount);
                 var rotatedPerpendicular = math.rotate(rotation, perpendicular);

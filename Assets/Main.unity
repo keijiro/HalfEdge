@@ -373,7 +373,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &860482584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,7 +507,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &995832114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,15 +521,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boxSize: 2
-  subdivisions: 3
+  subdivisions: 5
   useExtrude: 0
   extrudeDistance: 0.3
   useScale: 1
   scaleVector: {x: 1, y: 1, z: 1}
-  useTwist: 0
-  twistAngle: 45
+  useTwist: 1
+  twistAngle: 180
   twistAxis: {x: 0, y: 1, z: 0}
-  useSmooth: 1
+  useSmooth: 0
   smoothingFactor: 0.5
   smoothIterations: 1
 --- !u!4 &995832115
