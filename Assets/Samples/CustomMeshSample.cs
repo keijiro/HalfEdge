@@ -13,33 +13,30 @@ public class CustomMeshSample : MonoBehaviour
     
     void GenerateCustomMesh()
     {
+        // Create a simple pyramid (square pyramid)
+        // This demonstrates IndexedMeshBuilder with mixed quad and triangle faces
         var vertices = new float3[]
         {
-            new float3(0, 0, 0),
-            new float3(2, 0, 0),
-            new float3(2, 2, 0),
-            new float3(0, 2, 0),
-            new float3(1, 1, 2),
-            new float3(0, 0, 1),
-            new float3(2, 0, 1),
-            new float3(2, 2, 1),
-            new float3(0, 2, 1)
+            // Base vertices (square base at Y=0)
+            new float3(-1, 0, -1), // 0: bottom-left-back
+            new float3( 1, 0, -1), // 1: bottom-right-back
+            new float3( 1, 0,  1), // 2: bottom-right-front
+            new float3(-1, 0,  1), // 3: bottom-left-front
+            
+            // Apex vertex
+            new float3( 0, 2,  0)  // 4: top center
         };
         
         var faces = new int[][]
         {
+            // Base face (quad) - counter-clockwise when viewed from below (outward normal)
             new int[] { 0, 1, 2, 3 },
-            new int[] { 4, 7, 6, 5 },
-            new int[] { 0, 5, 6, 1 },
-            new int[] { 1, 6, 7, 2 },
-            new int[] { 2, 7, 8, 3 },
-            new int[] { 3, 8, 5, 0 },
-            new int[] { 0, 3, 4, 5 },
-            new int[] { 1, 4, 7, 2 },
-            new int[] { 5, 8, 4 },
-            new int[] { 6, 4, 8 },
-            new int[] { 7, 8, 4 },
-            new int[] { 6, 8, 7 }
+            
+            // Side faces (triangles) - counter-clockwise when viewed from outside
+            new int[] { 0, 4, 1 }, // back face
+            new int[] { 1, 4, 2 }, // right face
+            new int[] { 2, 4, 3 }, // front face
+            new int[] { 3, 4, 0 }  // left face
         };
         
         var builder = new IndexedMeshBuilder(vertices, faces);

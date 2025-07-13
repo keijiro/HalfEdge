@@ -80,6 +80,35 @@ public class WindingOrderTests
         AssertMeshHasCorrectWindingOrder(unityMesh);
     }
     
+    [Test]
+    public void CustomPyramid_HasCorrectWindingOrder()
+    {
+        // Test the improved CustomMeshSample pyramid
+        var vertices = new float3[]
+        {
+            new float3(-1, 0, -1), // 0: bottom-left-back
+            new float3( 1, 0, -1), // 1: bottom-right-back
+            new float3( 1, 0,  1), // 2: bottom-right-front
+            new float3(-1, 0,  1), // 3: bottom-left-front
+            new float3( 0, 2,  0)  // 4: top center
+        };
+        
+        var faces = new int[][]
+        {
+            new int[] { 0, 1, 2, 3 }, // base face
+            new int[] { 0, 4, 1 },    // back face
+            new int[] { 1, 4, 2 },    // right face
+            new int[] { 2, 4, 3 },    // front face
+            new int[] { 3, 4, 0 }     // left face
+        };
+        
+        var meshData = new MeshData();
+        meshData.InitializeFromIndexedFaces(vertices, faces);
+        var unityMesh = meshData.ToUnityMesh();
+        
+        AssertMeshHasCorrectWindingOrder(unityMesh);
+    }
+    
     void AssertMeshHasCorrectWindingOrder(Mesh mesh)
     {
         var vertices = mesh.vertices;

@@ -188,7 +188,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &444790519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,7 +507,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &995832114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,17 +521,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boxSize: 2
-  subdivisions: 5
+  subdivisions: 4
   useExtrude: 0
   extrudeDistance: 0.3
   useScale: 1
   scaleVector: {x: 1, y: 1, z: 1}
   useTwist: 1
-  twistAngle: 180
+  twistAngle: 90
   twistAxis: {x: 0, y: 1, z: 0}
-  useSmooth: 0
-  smoothingFactor: 0.5
-  smoothIterations: 1
+  useSmooth: 1
+  smoothingFactor: 0.8
+  smoothIterations: 2
 --- !u!4 &995832115
 Transform:
   m_ObjectHideFlags: 0
@@ -1102,7 +1102,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -1120,7 +1120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-  spacing: 3
+  spacing: 1.5
 --- !u!23 &1433702252
 MeshRenderer:
   m_ObjectHideFlags: 0
