@@ -11,14 +11,14 @@ public class MeshExportTests
     {
         var generator = new BoxGenerator(1f, 1f, 1f, 0);
         var meshData = generator.Generate();
-        
+
         var unityMesh = meshData.ToUnityMesh();
-        
+
         Assert.IsNotNull(unityMesh);
         Assert.AreEqual(8, unityMesh.vertexCount);
         Assert.AreEqual(36, unityMesh.triangles.Length);
     }
-    
+
     [Test]
     public void ToUnityMesh_PreservesVertexPositions()
     {
@@ -28,16 +28,16 @@ public class MeshExportTests
             new float3(1, 0, 0),
             new float3(0.5f, 1, 0)
         };
-        
+
         var faces = new int[][]
         {
             new int[] { 0, 1, 2 }
         };
-        
+
         var builder = new IndexedMeshBuilder(vertices, faces);
         var meshData = builder.Build();
         var unityMesh = meshData.ToUnityMesh();
-        
+
         for (int i = 0; i < vertices.Length; i++)
         {
             var expected = vertices[i];
@@ -47,7 +47,7 @@ public class MeshExportTests
             Assert.AreEqual(expected.z, actual.z, 0.001f);
         }
     }
-    
+
     [Test]
     public void ToUnityMesh_HandlesPolygonalFaces()
     {
@@ -58,32 +58,32 @@ public class MeshExportTests
             new float3(1, 1, 0),
             new float3(0, 1, 0)
         };
-        
+
         var faces = new int[][]
         {
             new int[] { 0, 1, 2, 3 }
         };
-        
+
         var builder = new IndexedMeshBuilder(vertices, faces);
         var meshData = builder.Build();
         var unityMesh = meshData.ToUnityMesh();
-        
+
         Assert.AreEqual(4, unityMesh.vertexCount);
         Assert.AreEqual(6, unityMesh.triangles.Length);
     }
-    
+
     [Test]
     public void HalfEdge_Topology_IsConsistent()
     {
         var generator = new BoxGenerator(1f, 1f, 1f, 0);
         var mesh = generator.Generate();
-        
+
         foreach (var halfEdge in mesh.HalfEdges)
         {
             Assert.IsNotNull(halfEdge.Next);
             Assert.IsNotNull(halfEdge.Origin);
             Assert.IsNotNull(halfEdge.Face);
-            
+
             if (halfEdge.Twin != null)
             {
                 Assert.AreEqual(halfEdge, halfEdge.Twin.Twin);
@@ -91,20 +91,20 @@ public class MeshExportTests
                 Assert.AreEqual(halfEdge.Destination, halfEdge.Twin.Origin);
             }
         }
-        
+
         foreach (var face in mesh.Faces)
         {
             var start = face.HalfEdge;
             var current = start;
             var count = 0;
-            
+
             do
             {
                 Assert.AreEqual(face, current.Face);
                 current = current.Next;
                 count++;
             } while (current != start && count < 100);
-            
+
             Assert.AreEqual(start, current);
             Assert.Less(count, 100);
         }

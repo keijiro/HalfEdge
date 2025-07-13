@@ -6,7 +6,7 @@ namespace HalfEdgeMesh
         public HalfEdge Twin { get; set; }
         public Vertex Origin { get; set; }
         public Face Face { get; set; }
-        
+
         public HalfEdge Previous
         {
             get
@@ -17,7 +17,7 @@ namespace HalfEdgeMesh
                 return current;
             }
         }
-        
+
         public Vertex Destination => Next?.Origin;
     }
 }

@@ -8,18 +8,18 @@ public class BoxGeneratorSample : MonoBehaviour
     [SerializeField] float height = 2f;
     [SerializeField] float depth = 2f;
     [SerializeField] int subdivisions = 0;
-    
+
     void Start()
     {
         GenerateMesh();
     }
-    
+
     void GenerateMesh()
     {
         var generator = new BoxGenerator(width, height, depth, subdivisions);
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
-        
+
         GetComponent<MeshFilter>().mesh = unityMesh;
     }
 }

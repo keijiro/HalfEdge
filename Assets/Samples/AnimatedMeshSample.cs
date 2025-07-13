@@ -8,27 +8,27 @@ public class AnimatedMeshSample : MonoBehaviour
 {
     [SerializeField] float animationSpeed = 1f;
     [SerializeField] float maxTwistAngle = 90f;
-    
+
     MeshData baseMeshData;
-    
+
     void Start()
     {
         GenerateBaseMesh();
     }
-    
+
     void GenerateBaseMesh()
     {
         var generator = new CylinderGenerator(1f, 3f, 12, true);
         baseMeshData = generator.Generate();
     }
-    
+
     void Update()
     {
         if (baseMeshData == null) return;
-        
+
         var generator = new CylinderGenerator(1f, 3f, 12, true);
         var meshData = generator.Generate();
-        
+
         var twistAmount = Mathf.Sin(Time.time * animationSpeed) * maxTwistAngle * Mathf.Deg2Rad;
         var twistModifier = new TwistModifier(
             new float3(0, 1, 0),
@@ -37,11 +37,11 @@ public class AnimatedMeshSample : MonoBehaviour
             2f
         );
         twistModifier.Apply(meshData);
-        
+
         var scaleAmount = 1f + Mathf.Sin(Time.time * animationSpeed * 2f) * 0.2f;
         var scaleModifier = new ScaleModifier(scaleAmount);
         scaleModifier.Apply(meshData);
-        
+
         var unityMesh = meshData.ToUnityMesh();
         GetComponent<MeshFilter>().mesh = unityMesh;
     }
