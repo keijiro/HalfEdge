@@ -58,51 +58,134 @@ namespace HalfEdgeMesh.Generators
         void Subdivide(MeshData meshData)
         {
             var originalFaces = meshData.Faces.ToArray();
-            var edgeMidpoints = new System.Collections.Generic.Dictionary<Edge, Vertex>();
+            var originalEdges = meshData.Edges.ToArray();
+            var edgeMidpoints = new System.Collections.Generic.Dictionary<System.Tuple<Vertex, Vertex>, Vertex>();
             
-            foreach (var edge in meshData.Edges.ToArray())
+            // Split all edges and store midpoints
+            foreach (var edge in originalEdges)
             {
+                var v0 = edge.HalfEdge.Origin;
+                var v1 = edge.HalfEdge.Destination;
                 var midpoint = meshData.SplitEdge(edge);
-                edgeMidpoints[edge] = midpoint.Origin;
+                
+                // Store both direction mappings for easier lookup
+                var key1 = System.Tuple.Create(v0, v1);
+                var key2 = System.Tuple.Create(v1, v0);
+                edgeMidpoints[key1] = midpoint.Origin;
+                edgeMidpoints[key2] = midpoint.Origin;
             }
             
+            // Clear all existing data to rebuild from scratch
+            meshData.HalfEdges.Clear();
+            meshData.Edges.Clear();
+            meshData.Faces.Clear();
+            
+            // Reset vertex half-edge references
+            foreach (var vertex in meshData.Vertices)
+                vertex.HalfEdge = null;
+            
+            // Create new faces for each original face
             foreach (var face in originalFaces)
             {
                 var vertices = face.GetVertices();
                 if (vertices.Count == 4)
                 {
+                    // Calculate face center
                     var center = new Vertex((vertices[0].Position + vertices[1].Position + 
                                            vertices[2].Position + vertices[3].Position) * 0.25f);
                     meshData.Vertices.Add(center);
                     
-                    meshData.Faces.Remove(face);
-                    
+                    // Create 4 new quad faces
                     for (int i = 0; i < 4; i++)
                     {
                         var v0 = vertices[i];
                         var v1 = vertices[(i + 1) % 4];
+                        var v3 = vertices[(i + 3) % 4];
                         
-                        Vertex mid0 = null, mid1 = null;
-                        foreach (var kvp in edgeMidpoints)
-                        {
-                            var edge = kvp.Key;
-                            if ((edge.V0 == v0 && edge.V1 == v1) || (edge.V0 == v1 && edge.V1 == v0))
-                                mid0 = kvp.Value;
-                            
-                            var v3 = vertices[(i + 3) % 4];
-                            if ((edge.V0 == v3 && edge.V1 == v0) || (edge.V0 == v0 && edge.V1 == v3))
-                                mid1 = kvp.Value;
-                        }
+                        // Find edge midpoints
+                        var mid01 = edgeMidpoints[System.Tuple.Create(v0, v1)];
+                        var mid30 = edgeMidpoints[System.Tuple.Create(v3, v0)];
                         
-                        if (mid0 != null && mid1 != null)
-                        {
-                            var newVertices = new float3[] { v0.Position, mid0.Position, center.Position, mid1.Position };
-                            var newFace = new int[][] { new int[] { 0, 1, 2, 3 } };
-                            
-                            var tempMesh = new MeshData();
-                            tempMesh.InitializeFromIndexedFaces(newVertices, newFace);
-                        }
+                        // Create new face with vertices in correct order
+                        var newFaceVertices = new float3[] { v0.Position, mid01.Position, center.Position, mid30.Position };
+                        var newFaceIndices = new int[][] { new int[] { 0, 1, 2, 3 } };
+                        
+                        // We need to manually create the face to use existing vertices
+                        var vertexList = new Vertex[] { v0, mid01, center, mid30 };
+                        CreateFaceFromVertices(meshData, vertexList);
                     }
+                }
+            }
+            
+            // Rebuild edge connectivity
+            RebuildEdgeConnectivity(meshData);
+        }
+        
+        void CreateFaceFromVertices(MeshData meshData, Vertex[] vertices)
+        {
+            var face = new Face();
+            meshData.Faces.Add(face);
+            
+            var halfEdges = new HalfEdge[vertices.Length];
+            
+            // Create half-edges for this face
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                var halfEdge = new HalfEdge
+                {
+                    Origin = vertices[i],
+                    Face = face
+                };
+                
+                meshData.HalfEdges.Add(halfEdge);
+                halfEdges[i] = halfEdge;
+                
+                if (vertices[i].HalfEdge == null)
+                    vertices[i].HalfEdge = halfEdge;
+            }
+            
+            // Set next pointers
+            for (int i = 0; i < halfEdges.Length; i++)
+            {
+                halfEdges[i].Next = halfEdges[(i + 1) % halfEdges.Length];
+            }
+            
+            face.HalfEdge = halfEdges[0];
+        }
+        
+        void RebuildEdgeConnectivity(MeshData meshData)
+        {
+            var halfEdgeMap = new System.Collections.Generic.Dictionary<System.Tuple<Vertex, Vertex>, HalfEdge>();
+            
+            // First pass: collect all half-edges
+            foreach (var he in meshData.HalfEdges)
+            {
+                var key = System.Tuple.Create(he.Origin, he.Destination);
+                halfEdgeMap[key] = he;
+            }
+            
+            // Second pass: set twin relationships and create edges
+            var processedPairs = new System.Collections.Generic.HashSet<System.Tuple<Vertex, Vertex>>();
+            
+            foreach (var kvp in halfEdgeMap)
+            {
+                var key = kvp.Key;
+                var he = kvp.Value;
+                var reverseKey = System.Tuple.Create(key.Item2, key.Item1);
+                
+                if (processedPairs.Contains(key) || processedPairs.Contains(reverseKey))
+                    continue;
+                
+                if (halfEdgeMap.TryGetValue(reverseKey, out var twin))
+                {
+                    he.Twin = twin;
+                    twin.Twin = he;
+                    
+                    var edge = new Edge(he);
+                    meshData.Edges.Add(edge);
+                    
+                    processedPairs.Add(key);
+                    processedPairs.Add(reverseKey);
                 }
             }
         }

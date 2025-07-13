@@ -22,7 +22,7 @@ namespace HalfEdgeMesh.Modifiers
                 
                 foreach (var vertex in mesh.Vertices)
                 {
-                    var neighbors = GetNeighborVertices(vertex);
+                    var neighbors = GetNeighborVertices(vertex, mesh);
                     if (neighbors.Count == 0)
                     {
                         newPositions[vertex] = vertex.Position;
@@ -43,26 +43,22 @@ namespace HalfEdgeMesh.Modifiers
             }
         }
         
-        List<Vertex> GetNeighborVertices(Vertex vertex)
+        List<Vertex> GetNeighborVertices(Vertex vertex, MeshData mesh)
         {
             var neighbors = new HashSet<Vertex>();
             
-            if (vertex.HalfEdge == null) return new List<Vertex>();
-            
-            var start = vertex.HalfEdge;
-            var current = start;
-            
-            do
+            // Find all half-edges connected to this vertex
+            foreach (var halfEdge in mesh.HalfEdges)
             {
-                if (current.Destination != null)
-                    neighbors.Add(current.Destination);
-                
-                if (current.Twin != null && current.Twin.Next != null)
-                    current = current.Twin.Next;
-                else
-                    break;
-                    
-            } while (current != start && current != null);
+                if (halfEdge.Origin == vertex && halfEdge.Destination != null)
+                {
+                    neighbors.Add(halfEdge.Destination);
+                }
+                else if (halfEdge.Destination == vertex && halfEdge.Origin != null)
+                {
+                    neighbors.Add(halfEdge.Origin);
+                }
+            }
             
             return new List<Vertex>(neighbors);
         }

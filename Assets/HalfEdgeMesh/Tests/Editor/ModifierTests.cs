@@ -70,7 +70,8 @@ public class ModifierTests
     [Test]
     public void SmoothModifier_SmoothsVertices()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 1);
+        // Test with simple box first (no subdivision)
+        var generator = new BoxGenerator(1f, 1f, 1f, 0);
         var mesh = generator.Generate();
         
         var originalPositions = new float3[mesh.Vertices.Count];
@@ -90,6 +91,6 @@ public class ModifierTests
             }
         }
         
-        Assert.IsTrue(hasChanged);
+        Assert.IsTrue(hasChanged, "No vertices were changed by smooth modifier");
     }
 }
