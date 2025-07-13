@@ -69,15 +69,15 @@ namespace HalfEdgeMesh.Generators
                     
                     if (lat == 0)
                     {
-                        faces.Add(new int[] { i0, i1, i2 });
+                        faces.Add(new int[] { i0, i2, i1 });
                     }
                     else if (lat == rings - 1)
                     {
-                        faces.Add(new int[] { i0, i1, i3 });
+                        faces.Add(new int[] { i0, i3, i1 });
                     }
                     else
                     {
-                        faces.Add(new int[] { i0, i1, i2, i3 });
+                        faces.Add(new int[] { i0, i3, i2, i1 });
                     }
                 }
             }

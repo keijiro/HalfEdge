@@ -1192,7 +1192,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1437654237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1208,7 +1208,7 @@ MonoBehaviour:
   width: 2
   height: 2
   depth: 2
-  subdivisions: 1
+  subdivisions: 2
 --- !u!4 &1437654238
 Transform:
   m_ObjectHideFlags: 0

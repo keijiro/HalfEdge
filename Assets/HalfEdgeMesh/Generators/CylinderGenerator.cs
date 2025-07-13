@@ -43,7 +43,7 @@ namespace HalfEdgeMesh.Generators
                 var i2 = ((i + 1) % segments) * 2 + 1;
                 var i3 = ((i + 1) % segments) * 2;
                 
-                faces.Add(new int[] { i0, i3, i2, i1 });
+                faces.Add(new int[] { i0, i1, i2, i3 });
             }
             
             if (capped)
@@ -58,11 +58,11 @@ namespace HalfEdgeMesh.Generators
                 {
                     var i0 = i * 2;
                     var i1 = ((i + 1) % segments) * 2;
-                    faces.Add(new int[] { bottomCenterIndex, i1, i0 });
+                    faces.Add(new int[] { bottomCenterIndex, i0, i1 });
                     
                     var i2 = i * 2 + 1;
                     var i3 = ((i + 1) % segments) * 2 + 1;
-                    faces.Add(new int[] { topCenterIndex, i2, i3 });
+                    faces.Add(new int[] { topCenterIndex, i3, i2 });
                 }
             }
             

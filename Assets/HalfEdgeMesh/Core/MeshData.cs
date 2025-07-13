@@ -119,8 +119,8 @@ namespace HalfEdgeMesh
                 for (int i = 1; i < faceVertices.Count - 1; i++)
                 {
                     triangles.Add(vertexMap[faceVertices[0]]);
-                    triangles.Add(vertexMap[faceVertices[i + 1]]);
                     triangles.Add(vertexMap[faceVertices[i]]);
+                    triangles.Add(vertexMap[faceVertices[i + 1]]);
                 }
             }
             
