@@ -8,13 +8,20 @@ namespace HalfEdgeMesh.Generators
         float radius;
         float height;
         int segments;
+        int heightSegments;
         bool capped;
 
         public CylinderGenerator(float radius, float height, int segments, bool capped = true)
+            : this(radius, height, segments, 1, capped)
+        {
+        }
+
+        public CylinderGenerator(float radius, float height, int segments, int heightSegments, bool capped = true)
         {
             this.radius = radius;
             this.height = height;
             this.segments = math.max(3, segments);
+            this.heightSegments = math.max(1, heightSegments);
             this.capped = capped;
         }
 
@@ -25,25 +32,34 @@ namespace HalfEdgeMesh.Generators
 
             var halfHeight = height * 0.5f;
             var angleStep = math.PI * 2f / segments;
+            var heightStep = height / heightSegments;
 
-            for (int i = 0; i < segments; i++)
+            // Generate vertices in rings
+            for (int h = 0; h <= heightSegments; h++)
             {
-                var angle = i * angleStep;
-                var x = math.cos(angle) * radius;
-                var z = math.sin(angle) * radius;
+                var y = -halfHeight + h * heightStep;
+                for (int i = 0; i < segments; i++)
+                {
+                    var angle = i * angleStep;
+                    var x = math.cos(angle) * radius;
+                    var z = math.sin(angle) * radius;
 
-                vertices.Add(new float3(x, -halfHeight, z));
-                vertices.Add(new float3(x, halfHeight, z));
+                    vertices.Add(new float3(x, y, z));
+                }
             }
 
-            for (int i = 0; i < segments; i++)
+            // Generate side faces
+            for (int h = 0; h < heightSegments; h++)
             {
-                var i0 = i * 2;
-                var i1 = i * 2 + 1;
-                var i2 = ((i + 1) % segments) * 2 + 1;
-                var i3 = ((i + 1) % segments) * 2;
+                for (int i = 0; i < segments; i++)
+                {
+                    var i0 = h * segments + i;
+                    var i1 = (h + 1) * segments + i;
+                    var i2 = (h + 1) * segments + ((i + 1) % segments);
+                    var i3 = h * segments + ((i + 1) % segments);
 
-                faces.Add(new int[] { i0, i1, i2, i3 });
+                    faces.Add(new int[] { i0, i1, i2, i3 });
+                }
             }
 
             if (capped)
@@ -54,15 +70,20 @@ namespace HalfEdgeMesh.Generators
                 var topCenterIndex = vertices.Count;
                 vertices.Add(new float3(0, halfHeight, 0));
 
+                // Bottom cap
                 for (int i = 0; i < segments; i++)
                 {
-                    var i0 = i * 2;
-                    var i1 = ((i + 1) % segments) * 2;
+                    var i0 = i;
+                    var i1 = (i + 1) % segments;
                     faces.Add(new int[] { bottomCenterIndex, i0, i1 });
+                }
 
-                    var i2 = i * 2 + 1;
-                    var i3 = ((i + 1) % segments) * 2 + 1;
-                    faces.Add(new int[] { topCenterIndex, i3, i2 });
+                // Top cap
+                for (int i = 0; i < segments; i++)
+                {
+                    var i0 = heightSegments * segments + i;
+                    var i1 = heightSegments * segments + ((i + 1) % segments);
+                    faces.Add(new int[] { topCenterIndex, i1, i0 });
                 }
             }
 

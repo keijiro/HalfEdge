@@ -8,6 +8,7 @@ public class BoxGeneratorSample : MonoBehaviour
     [SerializeField] float height = 2f;
     [SerializeField] float depth = 2f;
     [SerializeField] int subdivisions = 0;
+    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
 
     void Start()
     {
@@ -18,7 +19,7 @@ public class BoxGeneratorSample : MonoBehaviour
     {
         var generator = new BoxGenerator(width, height, depth, subdivisions);
         var meshData = generator.Generate();
-        var unityMesh = meshData.ToUnityMesh();
+        var unityMesh = meshData.ToUnityMesh(shadingMode);
 
         GetComponent<MeshFilter>().mesh = unityMesh;
     }

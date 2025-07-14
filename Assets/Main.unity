@@ -188,7 +188,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &444790519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,6 +201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f6a00d851e3c41d0964189f138ea282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shadingMode: 1
 --- !u!4 &444790520
 Transform:
   m_ObjectHideFlags: 0
@@ -387,8 +388,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 1
-  subdivisions: 2
+  subdivisions: 1
   sphereType: 0
+  shadingMode: 1
 --- !u!4 &860482585
 Transform:
   m_ObjectHideFlags: 0
@@ -507,7 +509,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &995832114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -532,6 +534,7 @@ MonoBehaviour:
   useSmooth: 1
   smoothingFactor: 0.8
   smoothIterations: 2
+  shadingMode: 0
 --- !u!4 &995832115
 Transform:
   m_ObjectHideFlags: 0
@@ -876,7 +879,9 @@ MonoBehaviour:
   radius: 1
   height: 2
   segments: 16
+  heightSegments: 1
   capped: 1
+  shadingMode: 1
 --- !u!4 &1381702113
 Transform:
   m_ObjectHideFlags: 0
@@ -1121,6 +1126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   spacing: 1.5
+  shadingMode: 1
 --- !u!23 &1433702252
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1209,6 +1215,7 @@ MonoBehaviour:
   height: 2
   depth: 2
   subdivisions: 2
+  shadingMode: 1
 --- !u!4 &1437654238
 Transform:
   m_ObjectHideFlags: 0
@@ -1389,6 +1396,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animationSpeed: 1
   maxTwistAngle: 90
+  segments: 8
+  heightSegments: 12
+  shadingMode: 1
 --- !u!23 &2126267764
 MeshRenderer:
   m_ObjectHideFlags: 0

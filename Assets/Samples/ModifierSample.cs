@@ -28,6 +28,9 @@ public class ModifierSample : MonoBehaviour
     [SerializeField] float smoothingFactor = 0.5f;
     [SerializeField] int smoothIterations = 1;
 
+    [Header("Rendering")]
+    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
+
     void Start()
     {
         GenerateMesh();
@@ -67,7 +70,7 @@ public class ModifierSample : MonoBehaviour
             smoothModifier.Apply(meshData);
         }
 
-        var unityMesh = meshData.ToUnityMesh();
+        var unityMesh = meshData.ToUnityMesh(shadingMode);
         GetComponent<MeshFilter>().mesh = unityMesh;
     }
 }

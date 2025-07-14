@@ -8,6 +8,7 @@ public class CombinedMeshSample : MonoBehaviour
 {
     [SerializeField] Material material;
     [SerializeField] float spacing = 3f;
+    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
 
     void Start()
     {
@@ -45,7 +46,7 @@ public class CombinedMeshSample : MonoBehaviour
         else
             meshRenderer.material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
 
-        var unityMesh = meshData.ToUnityMesh();
+        var unityMesh = meshData.ToUnityMesh(shadingMode);
         meshFilter.mesh = unityMesh;
     }
 }

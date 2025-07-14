@@ -5,6 +5,7 @@ using Unity.Mathematics;
 
 public class CustomMeshSample : MonoBehaviour
 {
+    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
 
     void Start()
     {
@@ -41,7 +42,7 @@ public class CustomMeshSample : MonoBehaviour
 
         var builder = new IndexedMeshBuilder(vertices, faces);
         var meshData = builder.Build();
-        var unityMesh = meshData.ToUnityMesh();
+        var unityMesh = meshData.ToUnityMesh(shadingMode);
 
         GetComponent<MeshFilter>().mesh = unityMesh;
     }
