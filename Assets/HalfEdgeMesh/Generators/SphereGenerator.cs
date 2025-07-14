@@ -148,21 +148,77 @@ namespace HalfEdgeMesh.Generators
 
         void SubdivideIcosphere(MeshData meshData)
         {
-            var originalFaces = meshData.Faces.ToArray();
-            var edgeMidpoints = new Dictionary<Edge, Vertex>();
-
-            foreach (var edge in meshData.Edges.ToArray())
+            // Extract current mesh data as indexed faces
+            var currentVertices = new List<float3>();
+            var currentFaces = new List<int[]>();
+            
+            foreach (var vertex in meshData.Vertices)
             {
-                var midPos = math.normalize((edge.V0.Position + edge.V1.Position) * 0.5f) * radius;
-                var midpoint = meshData.SplitEdge(edge);
-                midpoint.Origin.Position = midPos;
-                edgeMidpoints[edge] = midpoint.Origin;
+                currentVertices.Add(vertex.Position);
             }
-
-            foreach (var face in originalFaces)
+            
+            foreach (var face in meshData.Faces)
             {
-                meshData.TriangulateFace(face);
+                var faceVertices = face.GetVertices();
+                var indices = new int[faceVertices.Count];
+                for (int i = 0; i < faceVertices.Count; i++)
+                {
+                    indices[i] = meshData.Vertices.IndexOf(faceVertices[i]);
+                }
+                currentFaces.Add(indices);
             }
+            
+            // Create new subdivided mesh
+            var newVertices = new List<float3>(currentVertices);
+            var newFaces = new List<int[]>();
+            var edgeMidpoints = new Dictionary<(int, int), int>();
+            
+            foreach (var face in currentFaces)
+            {
+                if (face.Length == 3) // Triangle
+                {
+                    var v0 = face[0];
+                    var v1 = face[1];
+                    var v2 = face[2];
+                    
+                    // Get or create midpoint vertices
+                    var mid01 = GetOrCreateMidpoint(v0, v1, newVertices, edgeMidpoints);
+                    var mid12 = GetOrCreateMidpoint(v1, v2, newVertices, edgeMidpoints);
+                    var mid20 = GetOrCreateMidpoint(v2, v0, newVertices, edgeMidpoints);
+                    
+                    // Create 4 new triangles
+                    newFaces.Add(new int[] { v0, mid01, mid20 });
+                    newFaces.Add(new int[] { v1, mid12, mid01 });
+                    newFaces.Add(new int[] { v2, mid20, mid12 });
+                    newFaces.Add(new int[] { mid01, mid12, mid20 });
+                }
+                else
+                {
+                    // Keep non-triangular faces as is
+                    newFaces.Add(face);
+                }
+            }
+            
+            // Rebuild mesh data
+            meshData.Clear();
+            meshData.InitializeFromIndexedFaces(newVertices.ToArray(), newFaces.ToArray());
+        }
+        
+        int GetOrCreateMidpoint(int v0, int v1, List<float3> vertices, Dictionary<(int, int), int> edgeMidpoints)
+        {
+            var key = v0 < v1 ? (v0, v1) : (v1, v0);
+            
+            if (edgeMidpoints.TryGetValue(key, out int midIndex))
+            {
+                return midIndex;
+            }
+            
+            var midPos = math.normalize((vertices[v0] + vertices[v1]) * 0.5f) * radius;
+            midIndex = vertices.Count;
+            vertices.Add(midPos);
+            edgeMidpoints[key] = midIndex;
+            
+            return midIndex;
         }
     }
 }
