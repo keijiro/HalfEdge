@@ -97,37 +97,96 @@ namespace HalfEdgeMesh
             Edges.Clear();
         }
 
+        public enum ShadingMode
+        {
+            Smooth,
+            Flat
+        }
+
         public Mesh ToUnityMesh()
+        {
+            return ToUnityMesh(ShadingMode.Smooth);
+        }
+
+        public Mesh ToUnityMesh(ShadingMode shadingMode)
         {
             var mesh = new Mesh();
 
-            var vertices = new List<Vector3>();
-            var triangles = new List<int>();
-            var vertexMap = new Dictionary<Vertex, int>();
-
-            for (int i = 0; i < Vertices.Count; i++)
+            if (shadingMode == ShadingMode.Smooth)
             {
-                vertices.Add(Vertices[i].Position);
-                vertexMap[Vertices[i]] = i;
-            }
+                var vertices = new List<Vector3>();
+                var triangles = new List<int>();
+                var vertexMap = new Dictionary<Vertex, int>();
 
-            foreach (var face in Faces)
-            {
-                var faceVertices = face.GetVertices();
-                if (faceVertices.Count < 3) continue;
-
-                for (int i = 1; i < faceVertices.Count - 1; i++)
+                for (int i = 0; i < Vertices.Count; i++)
                 {
-                    triangles.Add(vertexMap[faceVertices[0]]);
-                    triangles.Add(vertexMap[faceVertices[i]]);
-                    triangles.Add(vertexMap[faceVertices[i + 1]]);
+                    vertices.Add(Vertices[i].Position);
+                    vertexMap[Vertices[i]] = i;
                 }
-            }
 
-            mesh.vertices = vertices.ToArray();
-            mesh.triangles = triangles.ToArray();
-            mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
+                foreach (var face in Faces)
+                {
+                    var faceVertices = face.GetVertices();
+                    if (faceVertices.Count < 3) continue;
+
+                    for (int i = 1; i < faceVertices.Count - 1; i++)
+                    {
+                        triangles.Add(vertexMap[faceVertices[0]]);
+                        triangles.Add(vertexMap[faceVertices[i]]);
+                        triangles.Add(vertexMap[faceVertices[i + 1]]);
+                    }
+                }
+
+                mesh.vertices = vertices.ToArray();
+                mesh.triangles = triangles.ToArray();
+                mesh.RecalculateNormals();
+                mesh.RecalculateBounds();
+            }
+            else // Flat shading
+            {
+                var vertices = new List<Vector3>();
+                var normals = new List<Vector3>();
+                var triangles = new List<int>();
+                var vertexIndex = 0;
+
+                foreach (var face in Faces)
+                {
+                    var faceVertices = face.GetVertices();
+                    if (faceVertices.Count < 3) continue;
+
+                    // Calculate face normal
+                    var v0 = faceVertices[0].Position;
+                    var v1 = faceVertices[1].Position;
+                    var v2 = faceVertices[2].Position;
+                    var faceNormal = Vector3.Cross(v1 - v0, v2 - v0).normalized;
+
+                    // Triangulate the face with duplicated vertices
+                    for (int i = 1; i < faceVertices.Count - 1; i++)
+                    {
+                        // Add three vertices for this triangle
+                        vertices.Add(faceVertices[0].Position);
+                        vertices.Add(faceVertices[i].Position);
+                        vertices.Add(faceVertices[i + 1].Position);
+
+                        // Add the same normal for all three vertices
+                        normals.Add(faceNormal);
+                        normals.Add(faceNormal);
+                        normals.Add(faceNormal);
+
+                        // Add triangle indices
+                        triangles.Add(vertexIndex);
+                        triangles.Add(vertexIndex + 1);
+                        triangles.Add(vertexIndex + 2);
+
+                        vertexIndex += 3;
+                    }
+                }
+
+                mesh.vertices = vertices.ToArray();
+                mesh.normals = normals.ToArray();
+                mesh.triangles = triangles.ToArray();
+                mesh.RecalculateBounds();
+            }
 
             return mesh;
         }
