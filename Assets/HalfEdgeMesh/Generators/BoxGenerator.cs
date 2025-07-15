@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Mathematics;
 
 namespace HalfEdgeMesh.Generators
@@ -90,9 +91,9 @@ namespace HalfEdgeMesh.Generators
             meshData.Clear();
 
             // Collect all unique vertices
-            var allVertices = new System.Collections.Generic.List<float3>();
-            var allFaces = new System.Collections.Generic.List<int[]>();
-            var vertexToIndex = new System.Collections.Generic.Dictionary<float3, int>();
+            var allVertices = new List<float3>();
+            var allFaces = new List<int[]>();
+            var vertexToIndex = new Dictionary<float3, int>();
 
             foreach (var faceVerts in faceData)
             {

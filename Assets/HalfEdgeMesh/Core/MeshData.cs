@@ -103,10 +103,7 @@ namespace HalfEdgeMesh
             Flat
         }
 
-        public Mesh ToUnityMesh()
-        {
-            return ToUnityMesh(ShadingMode.Smooth);
-        }
+        public Mesh ToUnityMesh() => ToUnityMesh(ShadingMode.Smooth);
 
         public Mesh ToUnityMesh(ShadingMode shadingMode)
         {

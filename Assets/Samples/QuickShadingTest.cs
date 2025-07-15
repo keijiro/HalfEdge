@@ -27,23 +27,15 @@ public class QuickShadingTest : MonoBehaviour
 
         // Verify flat shading has more vertices due to duplication
         if (flatMesh.vertices.Length > smoothMesh.vertices.Length)
-        {
             Debug.Log("✓ Flat shading correctly duplicates vertices");
-        }
         else
-        {
             Debug.LogError("✗ Flat shading vertex count issue");
-        }
 
         // Verify normals are set for flat shading
         if (flatMesh.normals.Length == flatMesh.vertices.Length)
-        {
             Debug.Log("✓ Flat shading has correct normal count");
-        }
         else
-        {
             Debug.LogError("✗ Flat shading normal count issue");
-        }
 
         Debug.Log("Shading mode test completed!");
     }

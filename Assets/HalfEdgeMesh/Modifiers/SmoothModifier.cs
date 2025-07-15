@@ -51,13 +51,9 @@ namespace HalfEdgeMesh.Modifiers
             foreach (var halfEdge in mesh.HalfEdges)
             {
                 if (halfEdge.Origin == vertex && halfEdge.Destination != null)
-                {
                     neighbors.Add(halfEdge.Destination);
-                }
                 else if (halfEdge.Destination == vertex && halfEdge.Origin != null)
-                {
                     neighbors.Add(halfEdge.Origin);
-                }
             }
 
             return new List<Vertex>(neighbors);

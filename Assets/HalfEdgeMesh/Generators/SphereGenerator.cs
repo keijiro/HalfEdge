@@ -22,13 +22,7 @@ namespace HalfEdgeMesh.Generators
             this.type = type;
         }
 
-        public MeshData Generate()
-        {
-            if (type == SphereType.Icosphere)
-                return GenerateIcosphere();
-            else
-                return GenerateUVSphere();
-        }
+        public MeshData Generate() => type == SphereType.Icosphere ? GenerateIcosphere() : GenerateUVSphere();
 
         MeshData GenerateUVSphere()
         {
@@ -151,12 +145,12 @@ namespace HalfEdgeMesh.Generators
             // Extract current mesh data as indexed faces
             var currentVertices = new List<float3>();
             var currentFaces = new List<int[]>();
-            
+
             foreach (var vertex in meshData.Vertices)
             {
                 currentVertices.Add(vertex.Position);
             }
-            
+
             foreach (var face in meshData.Faces)
             {
                 var faceVertices = face.GetVertices();
@@ -167,12 +161,12 @@ namespace HalfEdgeMesh.Generators
                 }
                 currentFaces.Add(indices);
             }
-            
+
             // Create new subdivided mesh
             var newVertices = new List<float3>(currentVertices);
             var newFaces = new List<int[]>();
             var edgeMidpoints = new Dictionary<(int, int), int>();
-            
+
             foreach (var face in currentFaces)
             {
                 if (face.Length == 3) // Triangle
@@ -180,12 +174,12 @@ namespace HalfEdgeMesh.Generators
                     var v0 = face[0];
                     var v1 = face[1];
                     var v2 = face[2];
-                    
+
                     // Get or create midpoint vertices
                     var mid01 = GetOrCreateMidpoint(v0, v1, newVertices, edgeMidpoints);
                     var mid12 = GetOrCreateMidpoint(v1, v2, newVertices, edgeMidpoints);
                     var mid20 = GetOrCreateMidpoint(v2, v0, newVertices, edgeMidpoints);
-                    
+
                     // Create 4 new triangles
                     newFaces.Add(new int[] { v0, mid01, mid20 });
                     newFaces.Add(new int[] { v1, mid12, mid01 });
@@ -198,26 +192,26 @@ namespace HalfEdgeMesh.Generators
                     newFaces.Add(face);
                 }
             }
-            
+
             // Rebuild mesh data
             meshData.Clear();
             meshData.InitializeFromIndexedFaces(newVertices.ToArray(), newFaces.ToArray());
         }
-        
+
         int GetOrCreateMidpoint(int v0, int v1, List<float3> vertices, Dictionary<(int, int), int> edgeMidpoints)
         {
             var key = v0 < v1 ? (v0, v1) : (v1, v0);
-            
+
             if (edgeMidpoints.TryGetValue(key, out int midIndex))
             {
                 return midIndex;
             }
-            
+
             var midPos = math.normalize((vertices[v0] + vertices[v1]) * 0.5f) * radius;
             midIndex = vertices.Count;
             vertices.Add(midPos);
             edgeMidpoints[key] = midIndex;
-            
+
             return midIndex;
         }
     }
