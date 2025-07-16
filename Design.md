@@ -44,22 +44,26 @@ The following generators are included:
 
 #### Basic Primitives
 
-- `BoxGenerator(float width, float height, float depth, int subdivisions)`
-- `PlaneGenerator(int widthSegments, int heightSegments, float size)`
-- `SphereGenerator(float radius, int resolution)`
-- `IcosphereGenerator(float radius, int subdivisions)`
-- `CylinderGenerator(float radius, float height, int segments)`
-- `ConeGenerator(float radius, float height, int segments)`
-- `TorusGenerator(float majorRadius, float minorRadius, int majorSegments, int minorSegments)`
-- `TetrahedronGenerator(float size)`
-- `OctahedronGenerator(float size)`
-- `IcosahedronGenerator(float size)`
-- `DodecahedronGenerator(float size)`
+- `Box(float width, float height, float depth, int subdivisions)`
+- `Plane(int widthSegments, int heightSegments, float size)`
+- `Sphere(float radius, int resolution)`
+- `Icosphere(float radius, int subdivisions)`
+- `Cylinder(float radius, float height, int segments)`
+- `Cone(float radius, float height, int segments)`
+- `Torus(float majorRadius, float minorRadius, int majorSegments, int minorSegments)`
+- `Tetrahedron(float size)`
+- `Octahedron(float size)`
+- `Icosahedron(float size)`
+- `Dodecahedron(float size)`
 
 #### Revolved and Extruded Shapes
 
-- `ExtrusionGenerator(List<float3> profile, float height)`
-- `LatheGenerator(List<float2> profile, int segments)`
+- `Extrusion(List<float3> profile, float height)`
+- `Lathe(List<float2> profile, int segments)`
+
+#### From Existing Data
+
+- `IndexedMesh(float3[] vertices, int[][] faces)`
 
 These generators allow for flexible shape creation and parameterized geometry
 construction.
