@@ -10,9 +10,9 @@ public class AnimatedMeshSample : MonoBehaviour
     [SerializeField] float maxTwistAngle = 90f;
     [SerializeField] int segments = 12;
     [SerializeField] int heightSegments = 1;
-    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
+    [SerializeField] HalfEdgeMesh.Mesh.NormalGenerationMode shadingMode = HalfEdgeMesh.Mesh.NormalGenerationMode.Smooth;
 
-    MeshData baseMeshData;
+    HalfEdgeMesh.Mesh baseMesh;
 
     void Start()
     {
@@ -21,29 +21,29 @@ public class AnimatedMeshSample : MonoBehaviour
 
     void GenerateBaseMesh()
     {
-        var generator = new CylinderGenerator(1f, 3f, segments, heightSegments, true);
-        baseMeshData = generator.Generate();
+        var generator = new Cylinder(1f, 3f, segments, heightSegments, true);
+        baseMesh = generator.Generate();
     }
 
     void Update()
     {
-        if (baseMeshData == null) return;
+        if (baseMesh == null) return;
 
-        var generator = new CylinderGenerator(1f, 3f, segments, heightSegments, true);
+        var generator = new Cylinder(1f, 3f, segments, heightSegments, true);
         var meshData = generator.Generate();
 
         var twistAmount = Mathf.Sin(Time.time * animationSpeed) * maxTwistAngle * Mathf.Deg2Rad;
-        var twistModifier = new TwistModifier(
+        var twistMesh = new TwistMesh(
             new float3(0, 1, 0),
             float3.zero,
             twistAmount,
             2f
         );
-        twistModifier.Apply(meshData);
+        twistMesh.Apply(meshData);
 
         var scaleAmount = 1f + Mathf.Sin(Time.time * animationSpeed * 2f) * 0.2f;
-        var scaleModifier = new ScaleModifier(scaleAmount);
-        scaleModifier.Apply(meshData);
+        var stretchMesh = new StretchMesh(scaleAmount);
+        stretchMesh.Apply(meshData);
 
         var unityMesh = meshData.ToUnityMesh(shadingMode);
         GetComponent<MeshFilter>().mesh = unityMesh;

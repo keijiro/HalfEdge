@@ -9,10 +9,10 @@ public class MeshExportTests
     [Test]
     public void ToUnityMesh_GeneratesValidMesh()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
-        var meshData = generator.Generate();
+        var generator = new Box(1f, 1f, 1f, 0);
+        var mesh = generator.Generate();
 
-        var unityMesh = meshData.ToUnityMesh();
+        var unityMesh = mesh.ToUnityMesh();
 
         Assert.IsNotNull(unityMesh);
         Assert.AreEqual(8, unityMesh.vertexCount);
@@ -34,9 +34,9 @@ public class MeshExportTests
             new int[] { 0, 1, 2 }
         };
 
-        var builder = new IndexedMeshBuilder(vertices, faces);
-        var meshData = builder.Build();
-        var unityMesh = meshData.ToUnityMesh();
+        var builder = new IndexedMesh(vertices, faces);
+        var mesh = builder.Build();
+        var unityMesh = mesh.ToUnityMesh();
 
         for (int i = 0; i < vertices.Length; i++)
         {
@@ -64,9 +64,9 @@ public class MeshExportTests
             new int[] { 0, 1, 2, 3 }
         };
 
-        var builder = new IndexedMeshBuilder(vertices, faces);
-        var meshData = builder.Build();
-        var unityMesh = meshData.ToUnityMesh();
+        var builder = new IndexedMesh(vertices, faces);
+        var mesh = builder.Build();
+        var unityMesh = mesh.ToUnityMesh();
 
         Assert.AreEqual(4, unityMesh.vertexCount);
         Assert.AreEqual(6, unityMesh.triangles.Length);
@@ -75,7 +75,7 @@ public class MeshExportTests
     [Test]
     public void HalfEdge_Topology_IsConsistent()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var mesh = generator.Generate();
 
         foreach (var halfEdge in mesh.HalfEdges)

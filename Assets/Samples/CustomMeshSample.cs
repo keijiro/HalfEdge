@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 public class CustomMeshSample : MonoBehaviour
 {
-    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
+    [SerializeField] HalfEdgeMesh.Mesh.NormalGenerationMode shadingMode = HalfEdgeMesh.Mesh.NormalGenerationMode.Smooth;
 
     void Start()
     {
@@ -15,7 +15,7 @@ public class CustomMeshSample : MonoBehaviour
     void GenerateCustomMesh()
     {
         // Create a simple pyramid (square pyramid)
-        // This demonstrates IndexedMeshBuilder with mixed quad and triangle faces
+        // This demonstrates IndexedMesh with mixed quad and triangle faces
         var vertices = new float3[]
         {
             // Base vertices (square base at Y=0)
@@ -40,7 +40,7 @@ public class CustomMeshSample : MonoBehaviour
             new int[] { 3, 4, 0 }  // left face
         };
 
-        var builder = new IndexedMeshBuilder(vertices, faces);
+        var builder = new IndexedMesh(vertices, faces);
         var meshData = builder.Build();
         var unityMesh = meshData.ToUnityMesh(shadingMode);
 

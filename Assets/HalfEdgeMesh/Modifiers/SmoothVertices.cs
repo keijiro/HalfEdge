@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 namespace HalfEdgeMesh.Modifiers
 {
-    public class SmoothModifier
+    public class SmoothVertices
     {
         float smoothingFactor;
         int iterations;
 
-        public SmoothModifier(float smoothingFactor = 0.5f, int iterations = 1)
+        public SmoothVertices(float smoothingFactor = 0.5f, int iterations = 1)
         {
             this.smoothingFactor = math.clamp(smoothingFactor, 0f, 1f);
             this.iterations = math.max(1, iterations);
         }
 
-        public void Apply(MeshData mesh)
+        public void Apply(Mesh mesh)
         {
             for (int iter = 0; iter < iterations; iter++)
             {
@@ -43,7 +43,7 @@ namespace HalfEdgeMesh.Modifiers
             }
         }
 
-        List<Vertex> GetNeighborVertices(Vertex vertex, MeshData mesh)
+        List<Vertex> GetNeighborVertices(Vertex vertex, Mesh mesh)
         {
             var neighbors = new HashSet<Vertex>();
 

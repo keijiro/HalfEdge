@@ -5,12 +5,12 @@ using System.Linq;
 
 namespace HalfEdgeMesh.Tests
 {
-    public class BoxGeneratorTests
+    public class BoxTests
     {
         [Test]
         public void Generate_NoSubdivisions_Creates6FacesAnd8Vertices()
         {
-            var generator = new BoxGenerator(1, 1, 1, 0);
+            var generator = new Box(1, 1, 1, 0);
             var mesh = generator.Generate();
 
             Assert.AreEqual(8, mesh.Vertices.Count);
@@ -25,7 +25,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_OneSubdivision_CreatesCorrectTopology()
         {
-            var generator = new BoxGenerator(1, 1, 1, 1);
+            var generator = new Box(1, 1, 1, 1);
             var mesh = generator.Generate();
 
             // Each original face (6) should be subdivided into 4 faces
@@ -44,7 +44,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_TwoSubdivisions_CreatesCorrectTopology()
         {
-            var generator = new BoxGenerator(1, 1, 1, 2);
+            var generator = new Box(1, 1, 1, 2);
             var mesh = generator.Generate();
 
             // Each face after first subdivision (24) should be subdivided into 4 faces
@@ -60,7 +60,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_SubdividedFaces_HaveCorrectConnectivity()
         {
-            var generator = new BoxGenerator(1, 1, 1, 1);
+            var generator = new Box(1, 1, 1, 1);
             var mesh = generator.Generate();
 
             // Check that all edges have proper twin connections
@@ -101,7 +101,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_SubdividedBox_PreservesBoxShape()
         {
-            var generator = new BoxGenerator(2, 2, 2, 1);
+            var generator = new Box(2, 2, 2, 1);
             var mesh = generator.Generate();
 
             // Check that all vertices are within the box bounds

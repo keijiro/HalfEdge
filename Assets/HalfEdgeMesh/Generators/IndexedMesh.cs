@@ -2,20 +2,20 @@ using Unity.Mathematics;
 
 namespace HalfEdgeMesh.Generators
 {
-    public class IndexedMeshBuilder
+    public class IndexedMesh
     {
         float3[] vertices;
         int[][] faces;
 
-        public IndexedMeshBuilder(float3[] vertices, int[][] faces)
+        public IndexedMesh(float3[] vertices, int[][] faces)
         {
             this.vertices = vertices;
             this.faces = faces;
         }
 
-        public MeshData Build()
+        public Mesh Build()
         {
-            var meshData = new MeshData();
+            var meshData = new Mesh();
             meshData.InitializeFromIndexedFaces(vertices, faces);
             return meshData;
         }

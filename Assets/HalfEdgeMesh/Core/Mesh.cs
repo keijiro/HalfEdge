@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace HalfEdgeMesh
 {
-    public class MeshData
+    public class Mesh
     {
         public List<Vertex> Vertices { get; private set; }
         public List<Face> Faces { get; private set; }
         public List<HalfEdge> HalfEdges { get; private set; }
         public List<Edge> Edges { get; private set; }
 
-        public MeshData()
+        public Mesh()
         {
             Vertices = new List<Vertex>();
             Faces = new List<Face>();
@@ -97,19 +97,17 @@ namespace HalfEdgeMesh
             Edges.Clear();
         }
 
-        public enum ShadingMode
+        public enum NormalGenerationMode
         {
             Smooth,
             Flat
         }
 
-        public Mesh ToUnityMesh() => ToUnityMesh(ShadingMode.Smooth);
-
-        public Mesh ToUnityMesh(ShadingMode shadingMode)
+        public UnityEngine.Mesh ToUnityMesh(NormalGenerationMode mode = NormalGenerationMode.Smooth)
         {
-            var mesh = new Mesh();
+            var mesh = new UnityEngine.Mesh();
 
-            if (shadingMode == ShadingMode.Smooth)
+            if (mode == NormalGenerationMode.Smooth)
             {
                 var vertices = new List<Vector3>();
                 var triangles = new List<int>();
@@ -155,7 +153,7 @@ namespace HalfEdgeMesh
                     var v0 = faceVertices[0].Position;
                     var v1 = faceVertices[1].Position;
                     var v2 = faceVertices[2].Position;
-                    var faceNormal = Vector3.Cross(v1 - v0, v2 - v0).normalized;
+                    var faceNormal = (Vector3)math.normalize(math.cross(v1 - v0, v2 - v0));
 
                     // Triangulate the face with duplicated vertices
                     for (int i = 1; i < faceVertices.Count - 1; i++)

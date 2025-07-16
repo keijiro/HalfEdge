@@ -8,7 +8,7 @@ public class CombinedMeshSample : MonoBehaviour
 {
     [SerializeField] Material material;
     [SerializeField] float spacing = 3f;
-    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
+    [SerializeField] HalfEdgeMesh.Mesh.NormalGenerationMode shadingMode = HalfEdgeMesh.Mesh.NormalGenerationMode.Smooth;
 
     void Start()
     {
@@ -17,12 +17,12 @@ public class CombinedMeshSample : MonoBehaviour
 
     void CreateMeshGrid()
     {
-        var generators = new List<(string name, System.Func<MeshData> generator)>
+        var generators = new List<(string name, System.Func<HalfEdgeMesh.Mesh> generator)>
         {
-            ("Box", () => new BoxGenerator(1f, 1f, 1f, 0).Generate()),
-            ("Cylinder", () => new CylinderGenerator(0.8f, 1.5f, 12, true).Generate()),
-            ("UV Sphere", () => new SphereGenerator(0.9f, 1, SphereGenerator.SphereType.UV).Generate()),
-            ("Icosphere", () => new SphereGenerator(0.9f, 1, SphereGenerator.SphereType.Icosphere).Generate())
+            ("Box", () => new Box(1f, 1f, 1f, 0).Generate()),
+            ("Cylinder", () => new Cylinder(0.8f, 1.5f, 12, true).Generate()),
+            ("Sphere", () => new Sphere(0.9f, 1).Generate()),
+            
         };
 
         for (int i = 0; i < generators.Count; i++)
@@ -32,7 +32,7 @@ public class CombinedMeshSample : MonoBehaviour
         }
     }
 
-    void CreateMeshObject(string objectName, MeshData meshData, Vector3 position)
+    void CreateMeshObject(string objectName, HalfEdgeMesh.Mesh meshData, Vector3 position)
     {
         var meshObject = new GameObject(objectName);
         meshObject.transform.parent = transform;

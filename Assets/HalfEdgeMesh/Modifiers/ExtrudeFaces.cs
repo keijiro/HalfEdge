@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace HalfEdgeMesh.Modifiers
 {
-    public class ExtrudeModifier
+    public class ExtrudeFaces
     {
         float distance;
         List<Face> facesToExtrude;
         bool useNormalDirection;
         float3 customDirection;
 
-        public ExtrudeModifier(float distance, bool useNormalDirection = true)
+        public ExtrudeFaces(float distance, bool useNormalDirection = true)
         {
             this.distance = distance;
             this.useNormalDirection = useNormalDirection;
@@ -18,7 +18,7 @@ namespace HalfEdgeMesh.Modifiers
             this.facesToExtrude = new List<Face>();
         }
 
-        public ExtrudeModifier(float distance, float3 direction)
+        public ExtrudeFaces(float distance, float3 direction)
         {
             this.distance = distance;
             this.useNormalDirection = false;
@@ -38,7 +38,7 @@ namespace HalfEdgeMesh.Modifiers
                 AddFace(face);
         }
 
-        public void Apply(MeshData mesh)
+        public void Apply(Mesh mesh)
         {
             if (facesToExtrude.Count == 0)
                 facesToExtrude.AddRange(mesh.Faces);

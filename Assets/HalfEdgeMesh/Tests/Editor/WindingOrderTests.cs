@@ -7,9 +7,9 @@ using UnityEngine;
 public class WindingOrderTests
 {
     [Test]
-    public void BoxGenerator_HasCorrectWindingOrder()
+    public void Box_HasCorrectWindingOrder()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
 
@@ -17,9 +17,9 @@ public class WindingOrderTests
     }
 
     [Test]
-    public void BoxGenerator_WithSubdivision_HasCorrectWindingOrder()
+    public void Box_WithSubdivision_HasCorrectWindingOrder()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 1);
+        var generator = new Box(1f, 1f, 1f, 1);
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
 
@@ -27,29 +27,21 @@ public class WindingOrderTests
     }
 
     [Test]
-    public void SphereGenerator_UV_HasCorrectWindingOrder()
+    public void Sphere_UV_HasCorrectWindingOrder()
     {
-        var generator = new SphereGenerator(1f, 2, SphereGenerator.SphereType.UV);
+        var generator = new Sphere(1f, 2);
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
 
         AssertMeshHasCorrectWindingOrder(unityMesh);
     }
 
-    [Test]
-    public void SphereGenerator_Icosphere_HasCorrectWindingOrder()
-    {
-        var generator = new SphereGenerator(1f, 1, SphereGenerator.SphereType.Icosphere);
-        var meshData = generator.Generate();
-        var unityMesh = meshData.ToUnityMesh();
-
-        AssertMeshHasCorrectWindingOrder(unityMesh);
-    }
+    
 
     [Test]
-    public void CylinderGenerator_HasCorrectWindingOrder()
+    public void Cylinder_HasCorrectWindingOrder()
     {
-        var generator = new CylinderGenerator(1f, 2f, 8);
+        var generator = new Cylinder(1f, 2f, 8);
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
 
@@ -73,7 +65,7 @@ public class WindingOrderTests
             new int[] { 0, 1, 2, 3 } // CCW when viewed from +Z
         };
 
-        var meshData = new MeshData();
+        var meshData = new HalfEdgeMesh.Mesh();
         meshData.InitializeFromIndexedFaces(vertices, faces);
         var unityMesh = meshData.ToUnityMesh();
 
@@ -102,14 +94,14 @@ public class WindingOrderTests
             new int[] { 3, 4, 0 }     // left face
         };
 
-        var meshData = new MeshData();
+        var meshData = new HalfEdgeMesh.Mesh();
         meshData.InitializeFromIndexedFaces(vertices, faces);
         var unityMesh = meshData.ToUnityMesh();
 
         AssertMeshHasCorrectWindingOrder(unityMesh);
     }
 
-    void AssertMeshHasCorrectWindingOrder(Mesh mesh)
+    void AssertMeshHasCorrectWindingOrder(UnityEngine.Mesh mesh)
     {
         var vertices = mesh.vertices;
         var triangles = mesh.triangles;

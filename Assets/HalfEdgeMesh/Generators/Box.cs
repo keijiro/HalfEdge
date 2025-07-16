@@ -3,14 +3,14 @@ using Unity.Mathematics;
 
 namespace HalfEdgeMesh.Generators
 {
-    public class BoxGenerator
+    public class Box
     {
         float width;
         float height;
         float depth;
         int subdivisions;
 
-        public BoxGenerator(float width, float height, float depth, int subdivisions = 0)
+        public Box(float width, float height, float depth, int subdivisions = 0)
         {
             this.width = width;
             this.height = height;
@@ -18,9 +18,9 @@ namespace HalfEdgeMesh.Generators
             this.subdivisions = subdivisions;
         }
 
-        public MeshData Generate()
+        public Mesh Generate()
         {
-            var meshData = new MeshData();
+            var meshData = new Mesh();
 
             var hw = width * 0.5f;
             var hh = height * 0.5f;
@@ -56,7 +56,7 @@ namespace HalfEdgeMesh.Generators
             return meshData;
         }
 
-        void Subdivide(MeshData meshData)
+        void Subdivide(Mesh meshData)
         {
             // For simplicity, rebuild the entire mesh with more subdivisions
             // Extract current face information

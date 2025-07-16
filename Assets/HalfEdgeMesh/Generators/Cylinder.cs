@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HalfEdgeMesh.Generators
 {
-    public class CylinderGenerator
+    public class Cylinder
     {
         float radius;
         float height;
@@ -11,12 +11,12 @@ namespace HalfEdgeMesh.Generators
         int heightSegments;
         bool capped;
 
-        public CylinderGenerator(float radius, float height, int segments, bool capped = true)
+        public Cylinder(float radius, float height, int segments, bool capped = true)
             : this(radius, height, segments, 1, capped)
         {
         }
 
-        public CylinderGenerator(float radius, float height, int segments, int heightSegments, bool capped = true)
+        public Cylinder(float radius, float height, int segments, int heightSegments, bool capped = true)
         {
             this.radius = radius;
             this.height = height;
@@ -25,7 +25,7 @@ namespace HalfEdgeMesh.Generators
             this.capped = capped;
         }
 
-        public MeshData Generate()
+        public Mesh Generate()
         {
             var vertices = new List<float3>();
             var faces = new List<int[]>();
@@ -87,7 +87,7 @@ namespace HalfEdgeMesh.Generators
                 }
             }
 
-            var meshData = new MeshData();
+            var meshData = new Mesh();
             meshData.InitializeFromIndexedFaces(vertices.ToArray(), faces.ToArray());
 
             return meshData;

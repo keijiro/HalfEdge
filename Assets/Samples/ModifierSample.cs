@@ -29,7 +29,7 @@ public class ModifierSample : MonoBehaviour
     [SerializeField] int smoothIterations = 1;
 
     [Header("Rendering")]
-    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
+    [SerializeField] HalfEdgeMesh.Mesh.NormalGenerationMode shadingMode = HalfEdgeMesh.Mesh.NormalGenerationMode.Smooth;
 
     void Start()
     {
@@ -38,36 +38,36 @@ public class ModifierSample : MonoBehaviour
 
     void GenerateMesh()
     {
-        var generator = new BoxGenerator(boxSize, boxSize, boxSize, subdivisions);
+        var generator = new Box(boxSize, boxSize, boxSize, subdivisions);
         var meshData = generator.Generate();
 
         if (useExtrude)
         {
-            var extrudeModifier = new ExtrudeModifier(extrudeDistance, true);
-            extrudeModifier.Apply(meshData);
+            var extrudeFaces = new ExtrudeFaces(extrudeDistance, true);
+            extrudeFaces.Apply(meshData);
         }
 
         if (useScale)
         {
-            var scaleModifier = new ScaleModifier(new float3(scaleVector.x, scaleVector.y, scaleVector.z));
-            scaleModifier.Apply(meshData);
+            var stretchMesh = new StretchMesh(new float3(scaleVector.x, scaleVector.y, scaleVector.z));
+            stretchMesh.Apply(meshData);
         }
 
         if (useTwist)
         {
-            var twistModifier = new TwistModifier(
+            var twistMesh = new TwistMesh(
                 new float3(twistAxis.x, twistAxis.y, twistAxis.z),
                 float3.zero,
                 twistAngle * Mathf.Deg2Rad,
                 boxSize * 2f
             );
-            twistModifier.Apply(meshData);
+            twistMesh.Apply(meshData);
         }
 
         if (useSmooth)
         {
-            var smoothModifier = new SmoothModifier(smoothingFactor, smoothIterations);
-            smoothModifier.Apply(meshData);
+            var smoothVertices = new SmoothVertices(smoothingFactor, smoothIterations);
+            smoothVertices.Apply(meshData);
         }
 
         var unityMesh = meshData.ToUnityMesh(shadingMode);

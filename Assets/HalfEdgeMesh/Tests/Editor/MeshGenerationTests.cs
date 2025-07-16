@@ -6,34 +6,34 @@ using Unity.Mathematics;
 public class MeshGenerationTests
 {
     [Test]
-    public void BoxGenerator_GeneratesExpectedVertexCount()
+    public void Box_GeneratesExpectedVertexCount()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var mesh = generator.Generate();
         Assert.AreEqual(8, mesh.Vertices.Count);
     }
 
     [Test]
-    public void BoxGenerator_GeneratesExpectedFaceCount()
+    public void Box_GeneratesExpectedFaceCount()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var mesh = generator.Generate();
         Assert.AreEqual(6, mesh.Faces.Count);
     }
 
     [Test]
-    public void CylinderGenerator_GeneratesCorrectVertexCount()
+    public void Cylinder_GeneratesCorrectVertexCount()
     {
         var segments = 8;
-        var generator = new CylinderGenerator(1f, 2f, segments, true);
+        var generator = new Cylinder(1f, 2f, segments, true);
         var mesh = generator.Generate();
         Assert.AreEqual(segments * 2 + 2, mesh.Vertices.Count);
     }
 
     [Test]
-    public void SphereGenerator_UVSphere_GeneratesValidMesh()
+    public void Sphere_UVSphere_GeneratesValidMesh()
     {
-        var generator = new SphereGenerator(1f, 0, SphereGenerator.SphereType.UV);
+        var generator = new Sphere(1f, 0);
         var mesh = generator.Generate();
 
         Assert.Greater(mesh.Vertices.Count, 0);
@@ -46,24 +46,10 @@ public class MeshGenerationTests
         }
     }
 
-    [Test]
-    public void SphereGenerator_Icosphere_GeneratesValidMesh()
-    {
-        var generator = new SphereGenerator(1f, 0, SphereGenerator.SphereType.Icosphere);
-        var mesh = generator.Generate();
-
-        Assert.AreEqual(12, mesh.Vertices.Count);
-        Assert.AreEqual(20, mesh.Faces.Count);
-
-        foreach (var vertex in mesh.Vertices)
-        {
-            var distance = math.length(vertex.Position);
-            Assert.AreEqual(1f, distance, 0.001f);
-        }
-    }
+    
 
     [Test]
-    public void IndexedMeshBuilder_BuildsCorrectMesh()
+    public void IndexedMesh_BuildsCorrectMesh()
     {
         var vertices = new float3[]
         {
@@ -78,7 +64,7 @@ public class MeshGenerationTests
             new int[] { 0, 1, 2, 3 }
         };
 
-        var builder = new IndexedMeshBuilder(vertices, faces);
+        var builder = new IndexedMesh(vertices, faces);
         var mesh = builder.Build();
 
         Assert.AreEqual(4, mesh.Vertices.Count);
@@ -88,9 +74,9 @@ public class MeshGenerationTests
     [Test]
     public void ToUnityMesh_SmoothShading_SharesVertices()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var meshData = generator.Generate();
-        var unityMesh = meshData.ToUnityMesh(MeshData.ShadingMode.Smooth);
+        var unityMesh = meshData.ToUnityMesh(Mesh.NormalGenerationMode.Smooth);
 
         // A box has 8 unique vertices when using smooth shading
         Assert.AreEqual(8, unityMesh.vertices.Length);
@@ -101,9 +87,9 @@ public class MeshGenerationTests
     [Test]
     public void ToUnityMesh_FlatShading_DuplicatesVertices()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var meshData = generator.Generate();
-        var unityMesh = meshData.ToUnityMesh(MeshData.ShadingMode.Flat);
+        var unityMesh = meshData.ToUnityMesh(Mesh.NormalGenerationMode.Flat);
 
         // With flat shading, each triangle has its own vertices
         // 6 faces * 2 triangles per face * 3 vertices per triangle = 36 vertices
@@ -136,9 +122,9 @@ public class MeshGenerationTests
             new int[] { 3, 4, 0 }     // left face
         };
 
-        var builder = new IndexedMeshBuilder(vertices, faces);
+        var builder = new IndexedMesh(vertices, faces);
         var meshData = builder.Build();
-        var unityMesh = meshData.ToUnityMesh(MeshData.ShadingMode.Flat);
+        var unityMesh = meshData.ToUnityMesh(Mesh.NormalGenerationMode.Flat);
 
         // Check that all normals for the base face point downward
         var baseNormal = unityMesh.normals[0];

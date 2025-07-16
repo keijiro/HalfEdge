@@ -2,24 +2,24 @@ using Unity.Mathematics;
 
 namespace HalfEdgeMesh.Modifiers
 {
-    public class ScaleModifier
+    public class StretchMesh
     {
         float3 scale;
         float3 center;
 
-        public ScaleModifier(float uniformScale, float3 center = default)
+        public StretchMesh(float uniformScale, float3 center = default)
         {
             this.scale = new float3(uniformScale, uniformScale, uniformScale);
             this.center = center;
         }
 
-        public ScaleModifier(float3 scale, float3 center = default)
+        public StretchMesh(float3 scale, float3 center = default)
         {
             this.scale = scale;
             this.center = center;
         }
 
-        public void Apply(MeshData mesh)
+        public void Apply(Mesh mesh)
         {
             foreach (var vertex in mesh.Vertices)
             {

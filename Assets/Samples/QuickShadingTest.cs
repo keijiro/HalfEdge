@@ -7,22 +7,22 @@ public class QuickShadingTest : MonoBehaviour
     void Start()
     {
         // Test both shading modes
-        TestShadingModes();
+        TestNormalGenerationModes();
     }
 
-    void TestShadingModes()
+    void TestNormalGenerationModes()
     {
         Debug.Log("Testing shading modes...");
 
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var meshData = generator.Generate();
 
         // Test smooth shading
-        var smoothMesh = meshData.ToUnityMesh(MeshData.ShadingMode.Smooth);
+        var smoothMesh = meshData.ToUnityMesh(HalfEdgeMesh.Mesh.NormalGenerationMode.Smooth);
         Debug.Log($"Smooth shading - Vertices: {smoothMesh.vertices.Length}, Triangles: {smoothMesh.triangles.Length}");
 
         // Test flat shading
-        var flatMesh = meshData.ToUnityMesh(MeshData.ShadingMode.Flat);
+        var flatMesh = meshData.ToUnityMesh(HalfEdgeMesh.Mesh.NormalGenerationMode.Flat);
         Debug.Log($"Flat shading - Vertices: {flatMesh.vertices.Length}, Triangles: {flatMesh.triangles.Length}, Normals: {flatMesh.normals.Length}");
 
         // Verify flat shading has more vertices due to duplication

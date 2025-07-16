@@ -2,14 +2,14 @@ using Unity.Mathematics;
 
 namespace HalfEdgeMesh.Modifiers
 {
-    public class TwistModifier
+    public class TwistMesh
     {
         float3 axis;
         float3 center;
         float angle;
         float falloffDistance;
 
-        public TwistModifier(float3 axis, float3 center, float angle, float falloffDistance = 0f)
+        public TwistMesh(float3 axis, float3 center, float angle, float falloffDistance = 0f)
         {
             this.axis = math.normalize(axis);
             this.center = center;
@@ -17,7 +17,7 @@ namespace HalfEdgeMesh.Modifiers
             this.falloffDistance = falloffDistance;
         }
 
-        public void Apply(MeshData mesh)
+        public void Apply(Mesh mesh)
         {
             foreach (var vertex in mesh.Vertices)
             {

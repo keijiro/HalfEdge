@@ -2,13 +2,13 @@ using UnityEngine;
 using HalfEdgeMesh;
 using HalfEdgeMesh.Generators;
 
-public class BoxGeneratorSample : MonoBehaviour
+public class BoxSample : MonoBehaviour
 {
     [SerializeField] float width = 2f;
     [SerializeField] float height = 2f;
     [SerializeField] float depth = 2f;
     [SerializeField] int subdivisions = 0;
-    [SerializeField] MeshData.ShadingMode shadingMode = MeshData.ShadingMode.Smooth;
+    [SerializeField] HalfEdgeMesh.Mesh.NormalGenerationMode shadingMode = HalfEdgeMesh.Mesh.NormalGenerationMode.Smooth;
 
     void Start()
     {
@@ -17,7 +17,7 @@ public class BoxGeneratorSample : MonoBehaviour
 
     void GenerateMesh()
     {
-        var generator = new BoxGenerator(width, height, depth, subdivisions);
+        var generator = new Box(width, height, depth, subdivisions);
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh(shadingMode);
 

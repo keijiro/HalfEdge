@@ -7,15 +7,15 @@ using Unity.Mathematics;
 public class ModifierTests
 {
     [Test]
-    public void ExtrudeModifier_ExtrudesAllFaces()
+    public void ExtrudeFaces_ExtrudesAllFaces()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var mesh = generator.Generate();
 
         var originalFaceCount = mesh.Faces.Count;
         var originalVertexCount = mesh.Vertices.Count;
 
-        var modifier = new ExtrudeModifier(0.5f);
+        var modifier = new ExtrudeFaces(0.5f);
         modifier.Apply(mesh);
 
         Assert.Greater(mesh.Faces.Count, originalFaceCount);
@@ -23,13 +23,13 @@ public class ModifierTests
     }
 
     [Test]
-    public void ScaleModifier_ScalesUniformly()
+    public void StretchMesh_ScalesUniformly()
     {
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var mesh = generator.Generate();
 
         var scaleFactor = 2f;
-        var modifier = new ScaleModifier(scaleFactor);
+        var modifier = new StretchMesh(scaleFactor);
         modifier.Apply(mesh);
 
         foreach (var vertex in mesh.Vertices)
@@ -40,7 +40,7 @@ public class ModifierTests
     }
 
     [Test]
-    public void TwistModifier_AppliesTwist()
+    public void TwistMesh_AppliesTwist()
     {
         var vertices = new float3[]
         {
@@ -55,12 +55,12 @@ public class ModifierTests
             new int[] { 0, 1, 2, 3 }
         };
 
-        var builder = new IndexedMeshBuilder(vertices, faces);
+        var builder = new IndexedMesh(vertices, faces);
         var mesh = builder.Build();
 
         var originalY = mesh.Vertices[2].Position.y;
 
-        var modifier = new TwistModifier(new float3(0, 1, 0), float3.zero, math.PI / 4f, 2f);
+        var modifier = new TwistMesh(new float3(0, 1, 0), float3.zero, math.PI / 4f, 2f);
         modifier.Apply(mesh);
 
         Assert.AreEqual(originalY, mesh.Vertices[2].Position.y, 0.001f);
@@ -68,7 +68,7 @@ public class ModifierTests
     }
 
     [Test]
-    public void TwistModifier_DoesNotReverseDirectionAtZeroPlane()
+    public void TwistMesh_DoesNotReverseDirectionAtZeroPlane()
     {
         // Create vertices above and below Y=0 at same distance
         var vertices = new float3[]
@@ -77,11 +77,11 @@ public class ModifierTests
             new float3(1,  1, 0)  // Above zero plane, distance = +1 from center
         };
 
-        var meshData = new MeshData();
+        var meshData = new Mesh();
         meshData.Vertices.Add(new Vertex(vertices[0]));
         meshData.Vertices.Add(new Vertex(vertices[1]));
 
-        var modifier = new TwistModifier(new float3(0, 1, 0), float3.zero, math.PI / 2f, 0f);
+        var modifier = new TwistMesh(new float3(0, 1, 0), float3.zero, math.PI / 2f, 0f);
         modifier.Apply(meshData);
 
         var bottomVertex = meshData.Vertices[0].Position;
@@ -114,7 +114,7 @@ public class ModifierTests
     }
 
     [Test]
-    public void TwistModifier_HasLinearTwistProgression()
+    public void TwistMesh_HasLinearTwistProgression()
     {
         // Simplified test focusing on the failing case
         var testPositions = new float3[]
@@ -123,14 +123,14 @@ public class ModifierTests
             new float3(1,  1, 0)  // Y = 1 (for comparison)
         };
 
-        var meshData = new MeshData();
+        var meshData = new Mesh();
         foreach (var pos in testPositions)
         {
             meshData.Vertices.Add(new Vertex(pos));
         }
 
         // Apply 90-degree twist around Y-axis without falloff
-        var modifier = new TwistModifier(new float3(0, 1, 0), float3.zero, math.PI / 2f, 0f);
+        var modifier = new TwistMesh(new float3(0, 1, 0), float3.zero, math.PI / 2f, 0f);
         modifier.Apply(meshData);
 
         // Calculate actual rotation angles by measuring the angle from original to rotated position
@@ -159,7 +159,7 @@ public class ModifierTests
         }
 
         // The real issue: We need to test the actual behavior, not preconceived expectations
-        // TwistModifier rotates points around an axis proportional to their distance along that axis
+        // TwistMesh rotates points around an axis proportional to their distance along that axis
 
         // For Y=-1: The rotation should be -90° (clockwise when viewed from above)
         // For Y=+1: The rotation should be +90° (counter-clockwise when viewed from above)
@@ -194,7 +194,7 @@ public class ModifierTests
     }
 
     [Test]
-    public void TwistModifier_FalloffWorksCorrectly()
+    public void TwistMesh_FalloffWorksCorrectly()
     {
         // Test that falloff reduces twist effect with distance
         var testPositions = new float3[]
@@ -205,14 +205,14 @@ public class ModifierTests
             new float3(1, 3, 0)    // Beyond falloff distance - should have no effect
         };
 
-        var meshData = new MeshData();
+        var meshData = new Mesh();
         foreach (var pos in testPositions)
         {
             meshData.Vertices.Add(new Vertex(pos));
         }
 
         // Apply twist with falloff distance of 2
-        var modifier = new TwistModifier(new float3(0, 1, 0), float3.zero, math.PI / 2f, 2f);
+        var modifier = new TwistMesh(new float3(0, 1, 0), float3.zero, math.PI / 2f, 2f);
         modifier.Apply(meshData);
 
         // Calculate rotation angles
@@ -243,17 +243,17 @@ public class ModifierTests
     }
 
     [Test]
-    public void SmoothModifier_SmoothsVertices()
+    public void SmoothVertices_SmoothsVertices()
     {
         // Test with simple box first (no subdivision)
-        var generator = new BoxGenerator(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, 0);
         var mesh = generator.Generate();
 
         var originalPositions = new float3[mesh.Vertices.Count];
         for (int i = 0; i < mesh.Vertices.Count; i++)
             originalPositions[i] = mesh.Vertices[i].Position;
 
-        var modifier = new SmoothModifier(0.5f, 1);
+        var modifier = new SmoothVertices(0.5f, 1);
         modifier.Apply(mesh);
 
         var hasChanged = false;
