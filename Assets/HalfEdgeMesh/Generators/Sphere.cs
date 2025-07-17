@@ -19,8 +19,8 @@ namespace HalfEdgeMesh.Generators
             var vertices = new List<float3>();
             var faces = new List<int[]>();
 
-            var segments = 16 * (int)math.pow(2, resolution);
-            var rings = segments / 2;
+            var segments = resolution * 2;
+            var rings = resolution;
 
             for (int lat = 0; lat <= rings; lat++)
             {
