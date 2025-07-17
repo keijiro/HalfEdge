@@ -196,7 +196,7 @@ public class GeneratorSample : MonoBehaviour
         }
 
         var heMesh = CreateBaseMesh();
-        ApplyModifiers(heMesh);
+        heMesh = ApplyModifiers(heMesh);
 
         if (_mesh != null) DestroyImmediate(_mesh);
         _mesh = heMesh.ToUnityMesh(_shadingMode);
@@ -225,18 +225,19 @@ public class GeneratorSample : MonoBehaviour
         return null;
     }
 
-    void ApplyModifiers(HalfEdgeMesh.Mesh mesh)
+    HalfEdgeMesh.Mesh ApplyModifiers(HalfEdgeMesh.Mesh mesh)
     {
-        if (_useChamferVertices) ChamferVertices.Apply(mesh, _chamferVertexDistance);
-        if (_useChamferEdges) ChamferEdges.Apply(mesh, _chamferEdgeDistance);
+        if (_useChamferVertices) mesh = ChamferVertices.Apply(mesh, _chamferVertexDistance);
+        if (_useChamferEdges) mesh = ChamferEdges.Apply(mesh, _chamferEdgeDistance);
         if (_useExtrude) new ExtrudeFaces(_extrudeDistance, true).Apply(mesh);
-        if (_useCreateLattice) CreateLattice.Apply(mesh, _latticeSpacing);
-        if (_useSplitFaces) SplitFaces.Apply(mesh, _splitPlaneNormal, _splitPlanePoint);
-        if (_useSkew) SkewMesh.Apply(mesh, _skewAngle * Mathf.Deg2Rad, _skewDirection);
+        if (_useCreateLattice) mesh = CreateLattice.Apply(mesh, _latticeSpacing);
+        if (_useSplitFaces) mesh = SplitFaces.Apply(mesh, _splitPlaneNormal, _splitPlanePoint);
+        if (_useSkew) new SkewMesh(_skewAngle * Mathf.Deg2Rad, _skewDirection).Apply(mesh);
         if (_useSmooth) new SmoothVertices(0.5f, _smoothIterations).Apply(mesh);
         if (_useStretch) new StretchMesh(_stretchScale).Apply(mesh);
         if (_useTwist) new TwistMesh(_twistAxis, float3.zero, _twistAngle * Mathf.Deg2Rad).Apply(mesh);
-        if (_useExpand) ExpandVertices.Apply(mesh, _expandDistance);
+        if (_useExpand) new ExpandVertices(_expandDistance).Apply(mesh);
+        return mesh;
     }
 
     #endregion

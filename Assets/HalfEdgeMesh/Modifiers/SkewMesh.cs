@@ -3,18 +3,24 @@ using Unity.Mathematics;
 
 namespace HalfEdgeMesh.Modifiers
 {
-    public static class SkewMesh
+    public class SkewMesh
     {
-        public static Mesh Apply(Mesh mesh, float angle, float3 direction)
+        float angle;
+        float3 direction;
+
+        public SkewMesh(float angle, float3 direction)
         {
-            // Apply a skew transformation to the mesh
-            var result = new Mesh();
-            
-            var vertices = new List<float3>();
-            var faces = new List<int[]>();
-            
+            this.angle = angle;
+            this.direction = math.normalize(direction);
+        }
+
+        public void Apply(Mesh mesh)
+        {
+            if (angle == 0f) return;
+
+            var newPositions = new Dictionary<Vertex, float3>();
             var skewDirection = math.normalize(direction);
-            var angleRad = math.radians(angle);
+            var angleRad = angle; // Already in radians from GeneratorSample
             
             // Calculate mesh bounds to determine skew axis
             var bounds = CalculateBounds(mesh);
@@ -51,25 +57,12 @@ namespace HalfEdgeMesh.Modifiers
                 var skewOffset = skewDirection * (skewFactor * math.tan(angleRad) * math.length(size) * 0.1f);
                 var newPos = pos + skewOffset;
                 
-                vertices.Add(newPos);
+                newPositions[vertex] = newPos;
             }
             
-            // Copy faces with same topology
-            foreach (var face in mesh.Faces)
-            {
-                var faceVertices = face.GetVertices();
-                var indices = new int[faceVertices.Count];
-                
-                for (int i = 0; i < faceVertices.Count; i++)
-                {
-                    indices[i] = mesh.Vertices.IndexOf(faceVertices[i]);
-                }
-                
-                faces.Add(indices);
-            }
-            
-            result.InitializeFromIndexedFaces(vertices.ToArray(), faces.ToArray());
-            return result;
+            // Apply new positions
+            foreach (var kvp in newPositions)
+                kvp.Key.Position = kvp.Value;
         }
         
         static (float3 min, float3 max) CalculateBounds(Mesh mesh)

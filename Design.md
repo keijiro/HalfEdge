@@ -69,23 +69,38 @@ construction.
 
 ### Modifiers
 
-Modifiers are classes that take a `Mesh` object as input and modify it in
-some way. They are used to apply transformations to existing meshes, such as
-extrusion, twisting, and scaling. All modifiers reside in the `Modifiers`
-sub-namespace.
+Modifiers are classes that take parameters in their constructor and modify
+a `Mesh` object in-place through their `Apply(Mesh mesh)` method. They are
+used to apply transformations to existing meshes, such as extrusion, twisting,
+and scaling. All modifiers reside in the `Modifiers` sub-namespace.
 
 The following modifiers are included:
 
-- `ChamferVertices(Mesh mesh, float distance)`
-- `ChamferEdges(Mesh mesh, float distance)`
-- `ExtrudeFaces(Mesh mesh, float distance)`
-- `CreateLattice(Mesh mesh, float spacing)`
-- `SplitFaces(Mesh mesh, float3 planeNormal, float3 planePoint)`
-- `SkewMesh(Mesh mesh, float angle, float3 direction)`
-- `SmoothVertices(Mesh mesh, int iterations)`
-- `StretchMesh(Mesh mesh, float3 scale)`
-- `TwistMesh(Mesh mesh, float angle, float3 axis)`
-- `ExpandVertices(Mesh mesh, float distance)`
+#### Constructor + Apply Pattern (In-place Modifications)
+- `ExtrudeFaces(float distance, bool useNormalDirection = true)` - Extrudes faces along normals
+- `SmoothVertices(float smoothingFactor = 0.5f, int iterations = 1)` - Smooths vertex positions
+- `StretchMesh(float3 scale, float3 center = default)` - Scales mesh around center point
+- `TwistMesh(float3 axis, float3 center, float angle)` - Twists mesh around axis
+- `SkewMesh(float angle, float3 direction)` - Applies skew transformation
+- `ExpandVertices(float distance)` - Moves vertices outward along their normals
+
+#### Static Methods (Complex Topology Changes)
+- `ChamferVertices.Apply(Mesh mesh, float distance)` - Replaces vertices with chamfered corners
+- `ChamferEdges.Apply(Mesh mesh, float distance)` - Replaces edges with chamfered faces
+- `CreateLattice.Apply(Mesh mesh, float spacing)` - Creates lattice structure
+- `SplitFaces.Apply(Mesh mesh, float3 planeNormal, float3 planePoint)` - Splits faces with plane
+
+**Usage Pattern:**
+```csharp
+// Constructor + Apply pattern (in-place modification)
+new ExtrudeFaces(0.1f).Apply(mesh);
+new SmoothVertices(0.5f, 3).Apply(mesh);
+
+// Static method pattern (returns new mesh)
+mesh = ChamferVertices.Apply(mesh, 0.1f);
+mesh = ChamferEdges.Apply(mesh, 0.1f);
+mesh = CreateLattice.Apply(mesh, 0.2f);
+```
 
 Each modifier provides a clear and consistent API for applying a specific type
 of geometric or topological operation.

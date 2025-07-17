@@ -15,8 +15,9 @@ namespace HalfEdgeMesh.Tests
             
             var chamfered = ChamferEdges.Apply(mesh, 0.1f);
             
-            Assert.Greater(chamfered.Vertices.Count, 0);
-            Assert.Greater(chamfered.Faces.Count, 0);
+            // Chamfering edges should increase vertex and face count
+            Assert.Greater(chamfered.Vertices.Count, mesh.Vertices.Count);
+            Assert.Greater(chamfered.Faces.Count, mesh.Faces.Count);
             
             // Verify all faces are valid
             foreach (var face in chamfered.Faces)
@@ -68,14 +69,16 @@ namespace HalfEdgeMesh.Tests
         {
             var generator = new Box(1, 1, 1);
             var mesh = generator.Generate();
+            var originalVertexCount = mesh.Vertices.Count;
+            var originalFaceCount = mesh.Faces.Count;
             
-            var skewed = SkewMesh.Apply(mesh, 15.0f, new float3(1, 0, 0));
+            new SkewMesh(15.0f * math.PI / 180.0f, new float3(1, 0, 0)).Apply(mesh);
             
-            Assert.AreEqual(mesh.Vertices.Count, skewed.Vertices.Count);
-            Assert.AreEqual(mesh.Faces.Count, skewed.Faces.Count);
+            Assert.AreEqual(originalVertexCount, mesh.Vertices.Count);
+            Assert.AreEqual(originalFaceCount, mesh.Faces.Count);
             
             // Verify connectivity
-            foreach (var vertex in skewed.Vertices)
+            foreach (var vertex in mesh.Vertices)
             {
                 Assert.IsNotNull(vertex.HalfEdge);
                 Assert.AreEqual(vertex, vertex.HalfEdge.Origin);

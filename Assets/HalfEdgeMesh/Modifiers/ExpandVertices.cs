@@ -3,16 +3,20 @@ using Unity.Mathematics;
 
 namespace HalfEdgeMesh.Modifiers
 {
-    public static class ExpandVertices
+    public class ExpandVertices
     {
-        public static Mesh Apply(Mesh mesh, float distance)
+        float distance;
+
+        public ExpandVertices(float distance)
         {
-            // Simple implementation: move vertices outward along their average normal
-            var result = new Mesh();
-            
-            // Copy original data but modify vertex positions
-            var vertices = new List<float3>();
-            var faces = new List<int[]>();
+            this.distance = distance;
+        }
+
+        public void Apply(Mesh mesh)
+        {
+            if (distance == 0f) return;
+
+            var newPositions = new Dictionary<Vertex, float3>();
             
             foreach (var vertex in mesh.Vertices)
             {
@@ -45,23 +49,12 @@ namespace HalfEdgeMesh.Modifiers
                     normal = math.normalize(normal / count);
                 
                 // Move vertex outward
-                vertices.Add(vertex.Position + normal * distance);
+                newPositions[vertex] = vertex.Position + normal * distance;
             }
             
-            // Copy faces
-            foreach (var face in mesh.Faces)
-            {
-                var faceVertices = face.GetVertices();
-                var indices = new int[faceVertices.Count];
-                for (int i = 0; i < faceVertices.Count; i++)
-                {
-                    indices[i] = mesh.Vertices.IndexOf(faceVertices[i]);
-                }
-                faces.Add(indices);
-            }
-            
-            result.InitializeFromIndexedFaces(vertices.ToArray(), faces.ToArray());
-            return result;
+            // Apply new positions
+            foreach (var kvp in newPositions)
+                kvp.Key.Position = kvp.Value;
         }
     }
 }

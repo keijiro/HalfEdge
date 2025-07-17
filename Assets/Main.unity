@@ -419,12 +419,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dee7e1f67aba04afbae071f4277a7191, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _generatorType: 3
+  _generatorType: 0
   _subdivisions: 0
   _boxSize:
     x: 2
-    y: 1
-    z: 1.5
+    y: 2
+    z: 1
   _planeSegments:
     x: 8
     y: 8
@@ -490,9 +490,9 @@ MonoBehaviour:
     y: 2
     z: 0
   _useChamferVertices: 0
-  _chamferVertexDistance: 1
-  _useChamferEdges: 0
-  _chamferEdgeDistance: 0.1
+  _chamferVertexDistance: 0.2
+  _useChamferEdges: 1
+  _chamferEdgeDistance: 0.2
   _useExtrude: 0
   _extrudeDistance: 0.3
   _useCreateLattice: 0
@@ -510,8 +510,8 @@ MonoBehaviour:
   _skewAngle: 15
   _skewDirection:
     x: 1
-    y: 0
-    z: 0
+    y: 1
+    z: 1
   _useSmooth: 0
   _smoothIterations: 1
   _useStretch: 0

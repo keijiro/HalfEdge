@@ -15,8 +15,9 @@ namespace HalfEdgeMesh.Tests
             
             var chamfered = ChamferVertices.Apply(mesh, 0.1f);
             
-            Assert.AreEqual(mesh.Vertices.Count, chamfered.Vertices.Count);
-            Assert.AreEqual(mesh.Faces.Count, chamfered.Faces.Count);
+            // Chamfering vertices should increase vertex and face count
+            Assert.Greater(chamfered.Vertices.Count, mesh.Vertices.Count);
+            Assert.Greater(chamfered.Faces.Count, mesh.Faces.Count);
         }
 
         [Test]
@@ -24,11 +25,13 @@ namespace HalfEdgeMesh.Tests
         {
             var generator = new Box(1, 1, 1);
             var mesh = generator.Generate();
+            var originalVertexCount = mesh.Vertices.Count;
+            var originalFaceCount = mesh.Faces.Count;
             
-            var expanded = ExpandVertices.Apply(mesh, 0.1f);
+            new ExpandVertices(0.1f).Apply(mesh);
             
-            Assert.AreEqual(mesh.Vertices.Count, expanded.Vertices.Count);
-            Assert.AreEqual(mesh.Faces.Count, expanded.Faces.Count);
+            Assert.AreEqual(originalVertexCount, mesh.Vertices.Count);
+            Assert.AreEqual(originalFaceCount, mesh.Faces.Count);
         }
     }
 }
