@@ -19,6 +19,8 @@ public class GeneratorSampleEditor : Editor
     SerializedProperty _cylinderRadius;
     SerializedProperty _cylinderHeight;
     SerializedProperty _cylinderSegments;
+    SerializedProperty _cylinderHeightSegments;
+    SerializedProperty _cylinderCapped;
     SerializedProperty _coneRadius;
     SerializedProperty _coneHeight;
     SerializedProperty _coneSegments;
@@ -27,6 +29,12 @@ public class GeneratorSampleEditor : Editor
     SerializedProperty _torusMajorSegments;
     SerializedProperty _torusMinorSegments;
     SerializedProperty _polyhedronSize;
+    SerializedProperty _latheProfile;
+    SerializedProperty _latheSegments;
+    SerializedProperty _extrusionProfile;
+    SerializedProperty _extrusionHeight;
+    SerializedProperty _indexedMeshVertices;
+    SerializedProperty _indexedMeshFaces;
 
     // Modifier properties
     SerializedProperty _useChamferVertices;
@@ -71,6 +79,8 @@ public class GeneratorSampleEditor : Editor
         _cylinderRadius = serializedObject.FindProperty("_cylinderRadius");
         _cylinderHeight = serializedObject.FindProperty("_cylinderHeight");
         _cylinderSegments = serializedObject.FindProperty("_cylinderSegments");
+        _cylinderHeightSegments = serializedObject.FindProperty("_cylinderHeightSegments");
+        _cylinderCapped = serializedObject.FindProperty("_cylinderCapped");
         _coneRadius = serializedObject.FindProperty("_coneRadius");
         _coneHeight = serializedObject.FindProperty("_coneHeight");
         _coneSegments = serializedObject.FindProperty("_coneSegments");
@@ -79,6 +89,12 @@ public class GeneratorSampleEditor : Editor
         _torusMajorSegments = serializedObject.FindProperty("_torusMajorSegments");
         _torusMinorSegments = serializedObject.FindProperty("_torusMinorSegments");
         _polyhedronSize = serializedObject.FindProperty("_polyhedronSize");
+        _latheProfile = serializedObject.FindProperty("_latheProfile");
+        _latheSegments = serializedObject.FindProperty("_latheSegments");
+        _extrusionProfile = serializedObject.FindProperty("_extrusionProfile");
+        _extrusionHeight = serializedObject.FindProperty("_extrusionHeight");
+        _indexedMeshVertices = serializedObject.FindProperty("_indexedMeshVertices");
+        _indexedMeshFaces = serializedObject.FindProperty("_indexedMeshFaces");
 
         // Modifier properties
         _useChamferVertices = serializedObject.FindProperty("_useChamferVertices");
@@ -133,6 +149,9 @@ public class GeneratorSampleEditor : Editor
             case GeneratorSample.GeneratorType.Dodecahedron:
                 DrawPolyhedronGUI();
                 break;
+            case GeneratorSample.GeneratorType.Lathe: DrawLatheGUI(); break;
+            case GeneratorSample.GeneratorType.Extrusion: DrawExtrusionGUI(); break;
+            case GeneratorSample.GeneratorType.IndexedMesh: DrawIndexedMeshGUI(); break;
         }
 
         EditorGUILayout.Space();
@@ -185,6 +204,8 @@ public class GeneratorSampleEditor : Editor
         EditorGUILayout.PropertyField(_cylinderRadius, new GUIContent("Radius"));
         EditorGUILayout.PropertyField(_cylinderHeight, new GUIContent("Height"));
         EditorGUILayout.PropertyField(_cylinderSegments, new GUIContent("Segments"));
+        EditorGUILayout.PropertyField(_cylinderHeightSegments, new GUIContent("Height Segments"));
+        EditorGUILayout.PropertyField(_cylinderCapped, new GUIContent("Capped"));
     }
 
     void DrawConeGUI()
@@ -205,6 +226,24 @@ public class GeneratorSampleEditor : Editor
     void DrawPolyhedronGUI()
     {
         EditorGUILayout.PropertyField(_polyhedronSize, new GUIContent("Size"));
+    }
+
+    void DrawLatheGUI()
+    {
+        EditorGUILayout.PropertyField(_latheProfile, new GUIContent("Profile"));
+        EditorGUILayout.PropertyField(_latheSegments, new GUIContent("Segments"));
+    }
+
+    void DrawExtrusionGUI()
+    {
+        EditorGUILayout.PropertyField(_extrusionProfile, new GUIContent("Profile"));
+        EditorGUILayout.PropertyField(_extrusionHeight, new GUIContent("Height"));
+    }
+
+    void DrawIndexedMeshGUI()
+    {
+        EditorGUILayout.PropertyField(_indexedMeshVertices, new GUIContent("Vertices"));
+        EditorGUILayout.PropertyField(_indexedMeshFaces, new GUIContent("Faces"));
     }
 
     void DrawModifierGUI(SerializedProperty use, params SerializedProperty[] props)

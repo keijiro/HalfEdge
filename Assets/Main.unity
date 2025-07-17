@@ -419,8 +419,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dee7e1f67aba04afbae071f4277a7191, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _generatorType: 2
-  _subdivisions: 1
+  _generatorType: 10
+  _subdivisions: 0
   _boxSize:
     x: 2
     y: 1
@@ -430,19 +430,65 @@ MonoBehaviour:
     y: 8
   _planeSize: 2
   _sphereRadius: 1
-  _sphereResolution: 16
+  _sphereResolution: 8
   _icosphereRadius: 1
   _cylinderRadius: 0.8
   _cylinderHeight: 2
   _cylinderSegments: 16
+  _cylinderHeightSegments: 4
+  _cylinderCapped: 1
   _coneRadius: 1
   _coneHeight: 1.5
   _coneSegments: 16
   _torusMajorRadius: 1
   _torusMinorRadius: 0.3
-  _torusMajorSegments: 16
-  _torusMinorSegments: 12
+  _torusMajorSegments: 8
+  _torusMinorSegments: 8
   _polyhedronSize: 1
+  _latheProfile:
+  - x: 0
+    y: -1
+  - x: 0.5
+    y: -0.8
+  - x: 0.8
+    y: -0.2
+  - x: 0.8
+    y: 0.2
+  - x: 0.5
+    y: 0.8
+  - x: 0
+    y: 1
+  _latheSegments: 16
+  _extrusionProfile:
+  - x: -1
+    y: 0
+    z: -1
+  - x: 1
+    y: 0
+    z: -1
+  - x: 1
+    y: 0
+    z: 1
+  - x: -1
+    y: 0
+    z: 1
+  _extrusionHeight: 1
+  _indexedMeshVertices:
+  - x: -1
+    y: 0
+    z: -1
+  - x: 1
+    y: 0
+    z: -1
+  - x: 1
+    y: 0
+    z: 1
+  - x: -1
+    y: 0
+    z: 1
+  - x: 0
+    y: 2
+    z: 0
   _useChamferVertices: 0
   _chamferVertexDistance: 1
   _useChamferEdges: 0

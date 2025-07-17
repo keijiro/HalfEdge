@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using HalfEdgeMesh;
 using HalfEdgeMesh.Generators;
 using HalfEdgeMesh.Modifiers;
+using System.Collections.Generic;
 
 [ExecuteInEditMode]
 public class GeneratorSample : MonoBehaviour
@@ -12,7 +13,8 @@ public class GeneratorSample : MonoBehaviour
     public enum GeneratorType
     {
         Box, Plane, Sphere, Icosphere, Cylinder, Cone, Torus,
-        Tetrahedron, Octahedron, Icosahedron, Dodecahedron
+        Tetrahedron, Octahedron, Icosahedron, Dodecahedron,
+        Lathe, Extrusion, IndexedMesh
     }
 
     [SerializeField] GeneratorType _generatorType = GeneratorType.Box;
@@ -38,6 +40,8 @@ public class GeneratorSample : MonoBehaviour
     [SerializeField] float _cylinderRadius = 0.8f;
     [SerializeField] float _cylinderHeight = 2f;
     [SerializeField] int _cylinderSegments = 16;
+    [SerializeField] int _cylinderHeightSegments = 1;
+    [SerializeField] bool _cylinderCapped = true;
 
     // Cone
     [SerializeField] float _coneRadius = 1f;
@@ -52,6 +56,46 @@ public class GeneratorSample : MonoBehaviour
 
     // Polyhedron
     [SerializeField] float _polyhedronSize = 1f;
+
+    // Lathe
+    [SerializeField] List<float2> _latheProfile = new List<float2>
+    {
+        new float2(0.0f, -1.0f),
+        new float2(0.5f, -0.8f),
+        new float2(0.8f, -0.2f),
+        new float2(0.8f, 0.2f),
+        new float2(0.5f, 0.8f),
+        new float2(0.0f, 1.0f)
+    };
+    [SerializeField] int _latheSegments = 16;
+
+    // Extrusion
+    [SerializeField] List<float3> _extrusionProfile = new List<float3>
+    {
+        new float3(-1f, 0f, -1f),
+        new float3(1f, 0f, -1f),
+        new float3(1f, 0f, 1f),
+        new float3(-1f, 0f, 1f)
+    };
+    [SerializeField] float _extrusionHeight = 2f;
+
+    // IndexedMesh
+    [SerializeField] float3[] _indexedMeshVertices = new float3[]
+    {
+        new float3(-1f, 0f, -1f),
+        new float3(1f, 0f, -1f),
+        new float3(1f, 0f, 1f),
+        new float3(-1f, 0f, 1f),
+        new float3(0f, 2f, 0f)
+    };
+    [SerializeField] int[][] _indexedMeshFaces = new int[][]
+    {
+        new int[] {0, 1, 2, 3},  // Base
+        new int[] {0, 4, 1},     // Front
+        new int[] {1, 4, 2},     // Right
+        new int[] {2, 4, 3},     // Back
+        new int[] {3, 4, 0}      // Left
+    };
 
     #endregion
 
@@ -109,6 +153,18 @@ public class GeneratorSample : MonoBehaviour
 
     void OnValidate()
     {
+        // パラメーター検証
+        _cylinderSegments = Mathf.Max(3, _cylinderSegments);
+        _cylinderHeightSegments = Mathf.Max(1, _cylinderHeightSegments);
+        _coneSegments = Mathf.Max(3, _coneSegments);
+        _torusMajorSegments = Mathf.Max(3, _torusMajorSegments);
+        _torusMinorSegments = Mathf.Max(3, _torusMinorSegments);
+        _latheSegments = Mathf.Max(3, _latheSegments);
+        _planeSegments.x = Mathf.Max(1, _planeSegments.x);
+        _planeSegments.y = Mathf.Max(1, _planeSegments.y);
+        _sphereResolution = Mathf.Max(1, _sphereResolution);
+        _subdivisions = Mathf.Max(0, _subdivisions);
+
         _dirty = true;
     }
 
@@ -156,13 +212,16 @@ public class GeneratorSample : MonoBehaviour
             case GeneratorType.Plane: return new HalfEdgeMesh.Generators.Plane(_planeSegments.x, _planeSegments.y, _planeSize).Generate();
             case GeneratorType.Sphere: return new Sphere(_sphereRadius, _sphereResolution).Generate();
             case GeneratorType.Icosphere: return new Icosphere(_icosphereRadius, _subdivisions).Generate();
-            case GeneratorType.Cylinder: return new Cylinder(_cylinderRadius, _cylinderHeight, _cylinderSegments).Generate();
+            case GeneratorType.Cylinder: return new Cylinder(_cylinderRadius, _cylinderHeight, _cylinderSegments, _cylinderHeightSegments, _cylinderCapped).Generate();
             case GeneratorType.Cone: return new Cone(_coneRadius, _coneHeight, _coneSegments).Generate();
             case GeneratorType.Torus: return new Torus(_torusMajorRadius, _torusMinorRadius, _torusMajorSegments, _torusMinorSegments).Generate();
             case GeneratorType.Tetrahedron: return new Tetrahedron(_polyhedronSize).Generate();
             case GeneratorType.Octahedron: return new Octahedron(_polyhedronSize).Generate();
             case GeneratorType.Icosahedron: return new Icosahedron(_polyhedronSize).Generate();
             case GeneratorType.Dodecahedron: return new Dodecahedron(_polyhedronSize).Generate();
+            case GeneratorType.Lathe: return new Lathe(_latheProfile, _latheSegments).Generate();
+            case GeneratorType.Extrusion: return new Extrusion(_extrusionProfile, _extrusionHeight).Generate();
+            case GeneratorType.IndexedMesh: return new IndexedMesh(_indexedMeshVertices, _indexedMeshFaces).Build();
         }
         return null;
     }
