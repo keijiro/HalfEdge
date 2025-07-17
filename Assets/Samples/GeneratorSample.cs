@@ -101,6 +101,7 @@ public class GeneratorSample : MonoBehaviour
     #region Private members
 
     UnityEngine.Mesh _mesh;
+    bool _dirty = true;
 
     #endregion
 
@@ -108,12 +109,21 @@ public class GeneratorSample : MonoBehaviour
 
     void OnValidate()
     {
-        GenerateMesh();
+        _dirty = true;
     }
 
     void OnDestroy()
     {
         if (_mesh != null) DestroyImmediate(_mesh);
+    }
+
+    void Update()
+    {
+        if (_dirty)
+        {
+            GenerateMesh();
+            _dirty = false;
+        }
     }
 
     #endregion
