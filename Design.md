@@ -53,7 +53,6 @@ The following generators are included:
 - `Torus(float majorRadius, float minorRadius, int majorSegments, int minorSegments)`
 - `Tetrahedron(float size)`
 - `Octahedron(float size)`
-- `Icosahedron(float size)`
 - `Dodecahedron(float size)`
 
 #### Revolved and Extruded Shapes

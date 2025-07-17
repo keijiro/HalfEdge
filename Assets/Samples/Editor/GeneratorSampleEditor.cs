@@ -145,7 +145,6 @@ public class GeneratorSampleEditor : Editor
             case GeneratorSample.GeneratorType.Torus: DrawTorusGUI(); break;
             case GeneratorSample.GeneratorType.Tetrahedron:
             case GeneratorSample.GeneratorType.Octahedron:
-            case GeneratorSample.GeneratorType.Icosahedron:
             case GeneratorSample.GeneratorType.Dodecahedron:
                 DrawPolyhedronGUI();
                 break;

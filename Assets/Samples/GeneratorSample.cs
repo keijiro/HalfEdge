@@ -13,7 +13,7 @@ public class GeneratorSample : MonoBehaviour
     public enum GeneratorType
     {
         Box, Plane, Sphere, Icosphere, Cylinder, Cone, Torus,
-        Tetrahedron, Octahedron, Icosahedron, Dodecahedron,
+        Tetrahedron, Octahedron, Dodecahedron,
         Lathe, Extrusion, IndexedMesh
     }
 
@@ -217,7 +217,6 @@ public class GeneratorSample : MonoBehaviour
             case GeneratorType.Torus: return new Torus(_torusMajorRadius, _torusMinorRadius, _torusMajorSegments, _torusMinorSegments).Generate();
             case GeneratorType.Tetrahedron: return new Tetrahedron(_polyhedronSize).Generate();
             case GeneratorType.Octahedron: return new Octahedron(_polyhedronSize).Generate();
-            case GeneratorType.Icosahedron: return new Icosahedron(_polyhedronSize).Generate();
             case GeneratorType.Dodecahedron: return new Dodecahedron(_polyhedronSize).Generate();
             case GeneratorType.Lathe: return new Lathe(_latheProfile, _latheSegments).Generate();
             case GeneratorType.Extrusion: return new Extrusion(_extrusionProfile, _extrusionHeight).Generate();
