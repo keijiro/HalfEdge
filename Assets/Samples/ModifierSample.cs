@@ -28,6 +28,14 @@ public class ModifierSample : MonoBehaviour
     [SerializeField] float smoothingFactor = 0.5f;
     [SerializeField] int smoothIterations = 1;
 
+    [Header("Chamfer Vertices Modifier")]
+    [SerializeField] bool useChamferVertices = false;
+    [SerializeField] float chamferDistance = 0.1f;
+
+    [Header("Expand Vertices Modifier")]
+    [SerializeField] bool useExpandVertices = false;
+    [SerializeField] float expandDistance = 0.2f;
+
     [Header("Rendering")]
     [SerializeField] HalfEdgeMesh.Mesh.NormalGenerationMode shadingMode = HalfEdgeMesh.Mesh.NormalGenerationMode.Smooth;
 
@@ -68,6 +76,16 @@ public class ModifierSample : MonoBehaviour
         {
             var smoothVertices = new SmoothVertices(smoothingFactor, smoothIterations);
             smoothVertices.Apply(meshData);
+        }
+
+        if (useChamferVertices)
+        {
+            meshData = ChamferVertices.Apply(meshData, chamferDistance);
+        }
+
+        if (useExpandVertices)
+        {
+            meshData = ExpandVertices.Apply(meshData, expandDistance);
         }
 
         var unityMesh = meshData.ToUnityMesh(shadingMode);
