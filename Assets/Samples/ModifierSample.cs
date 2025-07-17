@@ -36,6 +36,18 @@ public class ModifierSample : MonoBehaviour
     [SerializeField] bool useExpandVertices = false;
     [SerializeField] float expandDistance = 0.2f;
 
+    [Header("Additional Modifiers")]
+    [SerializeField] bool useChamferEdges = false;
+    [SerializeField] float chamferEdgeDistance = 0.1f;
+    
+    [SerializeField] bool useSkewMesh = false;
+    [SerializeField] float skewAngle = 15f;
+    [SerializeField] Vector3 skewDirection = Vector3.right;
+    
+    [SerializeField] bool useSplitFaces = false;
+    [SerializeField] Vector3 splitPlaneNormal = Vector3.up;
+    [SerializeField] Vector3 splitPlanePoint = Vector3.zero;
+
     [Header("Rendering")]
     [SerializeField] HalfEdgeMesh.Mesh.NormalGenerationMode shadingMode = HalfEdgeMesh.Mesh.NormalGenerationMode.Smooth;
 
@@ -86,6 +98,22 @@ public class ModifierSample : MonoBehaviour
         if (useExpandVertices)
         {
             meshData = ExpandVertices.Apply(meshData, expandDistance);
+        }
+
+        if (useChamferEdges)
+        {
+            meshData = ChamferEdges.Apply(meshData, chamferEdgeDistance);
+        }
+
+        if (useSkewMesh)
+        {
+            meshData = SkewMesh.Apply(meshData, skewAngle, new float3(skewDirection.x, skewDirection.y, skewDirection.z));
+        }
+
+        if (useSplitFaces)
+        {
+            meshData = SplitFaces.Apply(meshData, new float3(splitPlaneNormal.x, splitPlaneNormal.y, splitPlaneNormal.z), 
+                                              new float3(splitPlanePoint.x, splitPlanePoint.y, splitPlanePoint.z));
         }
 
         var unityMesh = meshData.ToUnityMesh(shadingMode);
