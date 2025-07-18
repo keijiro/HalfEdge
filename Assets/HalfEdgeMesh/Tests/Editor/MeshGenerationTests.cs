@@ -33,7 +33,7 @@ public class MeshGenerationTests
     [Test]
     public void Sphere_UVSphere_GeneratesValidMesh()
     {
-        var generator = new Sphere(1f, 8);
+        var generator = new Sphere(1f, new int2(8, 6));
         var mesh = generator.Generate();
 
         Assert.Greater(mesh.Vertices.Count, 0);

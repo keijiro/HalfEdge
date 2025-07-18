@@ -6,12 +6,12 @@ namespace HalfEdgeMesh.Generators
     public class Sphere
     {
         float radius;
-        int resolution;
+        int2 segments;
 
-        public Sphere(float radius, int resolution)
+        public Sphere(float radius, int2 segments)
         {
             this.radius = radius;
-            this.resolution = resolution;
+            this.segments = math.max(segments, 3);
         }
 
         public Mesh Generate()
@@ -19,18 +19,19 @@ namespace HalfEdgeMesh.Generators
             var vertices = new List<float3>();
             var faces = new List<int[]>();
 
-            var segments = resolution * 2;
-            var rings = resolution;
+            var longitudeSegments = segments.x;
+            var latitudeSegments = segments.y;
 
-            for (int lat = 0; lat <= rings; lat++)
+            // Generate vertices
+            for (int lat = 0; lat <= latitudeSegments; lat++)
             {
-                var theta = lat * math.PI / rings;
+                var theta = lat * math.PI / latitudeSegments;
                 var sinTheta = math.sin(theta);
                 var cosTheta = math.cos(theta);
 
-                for (int lon = 0; lon <= segments; lon++)
+                for (int lon = 0; lon <= longitudeSegments; lon++)
                 {
-                    var phi = lon * 2 * math.PI / segments;
+                    var phi = lon * 2 * math.PI / longitudeSegments;
                     var sinPhi = math.sin(phi);
                     var cosPhi = math.cos(phi);
 
@@ -42,25 +43,29 @@ namespace HalfEdgeMesh.Generators
                 }
             }
 
-            for (int lat = 0; lat < rings; lat++)
+            // Generate faces with correct winding order for outward normals
+            for (int lat = 0; lat < latitudeSegments; lat++)
             {
-                for (int lon = 0; lon < segments; lon++)
+                for (int lon = 0; lon < longitudeSegments; lon++)
                 {
-                    var i0 = lat * (segments + 1) + lon;
-                    var i1 = i0 + segments + 1;
+                    var i0 = lat * (longitudeSegments + 1) + lon;
+                    var i1 = i0 + longitudeSegments + 1;
                     var i2 = i1 + 1;
                     var i3 = i0 + 1;
 
                     if (lat == 0)
                     {
+                        // Top cap - triangles 
                         faces.Add(new int[] { i0, i2, i1 });
                     }
-                    else if (lat == rings - 1)
+                    else if (lat == latitudeSegments - 1)
                     {
+                        // Bottom cap - triangles (reversed for correct outward normal)
                         faces.Add(new int[] { i0, i3, i1 });
                     }
                     else
                     {
+                        // Middle section - quads (reversed order for correct winding)
                         faces.Add(new int[] { i0, i3, i2, i1 });
                     }
                 }

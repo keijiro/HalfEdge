@@ -15,7 +15,7 @@ public class GeneratorSampleEditor : Editor
     SerializedProperty _planeSegments;
     SerializedProperty _planeSize;
     SerializedProperty _sphereRadius;
-    SerializedProperty _sphereResolution;
+    SerializedProperty _sphereSegments;
     SerializedProperty _icosphereRadius;
     SerializedProperty _cylinderRadius;
     SerializedProperty _cylinderHeight;
@@ -74,7 +74,7 @@ public class GeneratorSampleEditor : Editor
         _planeSegments = serializedObject.FindProperty("_planeSegments");
         _planeSize = serializedObject.FindProperty("_planeSize");
         _sphereRadius = serializedObject.FindProperty("_sphereRadius");
-        _sphereResolution = serializedObject.FindProperty("_sphereResolution");
+        _sphereSegments = serializedObject.FindProperty("_sphereSegments");
         _icosphereRadius = serializedObject.FindProperty("_icosphereRadius");
         _cylinderRadius = serializedObject.FindProperty("_cylinderRadius");
         _cylinderHeight = serializedObject.FindProperty("_cylinderHeight");
@@ -186,7 +186,7 @@ public class GeneratorSampleEditor : Editor
     void DrawSphereGUI()
     {
         EditorGUILayout.PropertyField(_sphereRadius, new GUIContent("Radius"));
-        EditorGUILayout.PropertyField(_sphereResolution, new GUIContent("Resolution"));
+        EditorGUILayout.PropertyField(_sphereSegments, new GUIContent("Segments"));
     }
 
     void DrawIcosphereGUI()

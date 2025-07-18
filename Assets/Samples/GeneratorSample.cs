@@ -32,7 +32,7 @@ public class GeneratorSample : MonoBehaviour
 
     // Sphere
     [SerializeField] float _sphereRadius = 1f;
-    [SerializeField] int _sphereResolution = 16;
+    [SerializeField] int2 _sphereSegments = new int2(16, 12);
 
     // Icosphere
     [SerializeField] float _icosphereRadius = 1f;
@@ -161,7 +161,8 @@ public class GeneratorSample : MonoBehaviour
         _latheSegments = Mathf.Max(3, _latheSegments);
         _planeSegments.x = Mathf.Max(1, _planeSegments.x);
         _planeSegments.y = Mathf.Max(1, _planeSegments.y);
-        _sphereResolution = Mathf.Max(1, _sphereResolution);
+        _sphereSegments.x = Mathf.Max(3, _sphereSegments.x);
+        _sphereSegments.y = Mathf.Max(3, _sphereSegments.y);
         _subdivisions = Mathf.Max(0, _subdivisions);
         _boxSegments.x = Mathf.Max(1, _boxSegments.x);
         _boxSegments.y = Mathf.Max(1, _boxSegments.y);
@@ -212,7 +213,7 @@ public class GeneratorSample : MonoBehaviour
         {
             case GeneratorType.Box: return new Box(_boxSize.x, _boxSize.y, _boxSize.z, _boxSegments).Generate();
             case GeneratorType.Plane: return new HalfEdgeMesh.Generators.Plane(_planeSegments.x, _planeSegments.y, _planeSize).Generate();
-            case GeneratorType.Sphere: return new Sphere(_sphereRadius, _sphereResolution).Generate();
+            case GeneratorType.Sphere: return new Sphere(_sphereRadius, _sphereSegments).Generate();
             case GeneratorType.Icosphere: return new Icosphere(_icosphereRadius, _subdivisions).Generate();
             case GeneratorType.Cylinder: return new Cylinder(_cylinderRadius, _cylinderHeight, _cylinderSegments, _cylinderHeightSegments, _cylinderCapped).Generate();
             case GeneratorType.Cone: return new Cone(_coneRadius, _coneHeight, _coneSegments).Generate();

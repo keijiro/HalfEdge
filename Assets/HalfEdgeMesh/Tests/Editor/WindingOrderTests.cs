@@ -29,7 +29,7 @@ public class WindingOrderTests
     [Test]
     public void Sphere_UV_HasCorrectWindingOrder()
     {
-        var generator = new Sphere(1f, 2);
+        var generator = new Sphere(1f, new int2(2, 2));
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
 

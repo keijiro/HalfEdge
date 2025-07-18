@@ -419,7 +419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dee7e1f67aba04afbae071f4277a7191, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _generatorType: 0
+  _generatorType: 2
   _subdivisions: 0
   _boxSize:
     x: 3
@@ -434,7 +434,9 @@ MonoBehaviour:
     y: 8
   _planeSize: 2
   _sphereRadius: 1
-  _sphereResolution: 8
+  _sphereSegments:
+    x: 16
+    y: 12
   _icosphereRadius: 1
   _cylinderRadius: 0.8
   _cylinderHeight: 2
