@@ -28,10 +28,6 @@ public class GeneratorSampleEditor : Editor
     SerializedProperty _torusMinorRadius;
     SerializedProperty _torusSegments;
     SerializedProperty _polyhedronSize;
-    SerializedProperty _latheProfile;
-    SerializedProperty _latheSegments;
-    SerializedProperty _extrusionProfile;
-    SerializedProperty _extrusionHeight;
 
     // Modifier properties
     SerializedProperty _useChamferVertices;
@@ -83,10 +79,6 @@ public class GeneratorSampleEditor : Editor
         _torusMinorRadius = serializedObject.FindProperty("_torusMinorRadius");
         _torusSegments = serializedObject.FindProperty("_torusSegments");
         _polyhedronSize = serializedObject.FindProperty("_polyhedronSize");
-        _latheProfile = serializedObject.FindProperty("_latheProfile");
-        _latheSegments = serializedObject.FindProperty("_latheSegments");
-        _extrusionProfile = serializedObject.FindProperty("_extrusionProfile");
-        _extrusionHeight = serializedObject.FindProperty("_extrusionHeight");
 
         // Modifier properties
         _useChamferVertices = serializedObject.FindProperty("_useChamferVertices");
@@ -138,8 +130,6 @@ public class GeneratorSampleEditor : Editor
             case GeneratorSample.GeneratorType.Dodecahedron:
                 DrawPolyhedronGUI();
                 break;
-            case GeneratorSample.GeneratorType.Lathe: DrawLatheGUI(); break;
-            case GeneratorSample.GeneratorType.Extrusion: DrawExtrusionGUI(); break;
         }
 
         EditorGUILayout.Space();
@@ -211,18 +201,6 @@ public class GeneratorSampleEditor : Editor
     void DrawPolyhedronGUI()
     {
         EditorGUILayout.PropertyField(_polyhedronSize, new GUIContent("Size"));
-    }
-
-    void DrawLatheGUI()
-    {
-        EditorGUILayout.PropertyField(_latheProfile, new GUIContent("Profile"));
-        EditorGUILayout.PropertyField(_latheSegments, new GUIContent("Segments"));
-    }
-
-    void DrawExtrusionGUI()
-    {
-        EditorGUILayout.PropertyField(_extrusionProfile, new GUIContent("Profile"));
-        EditorGUILayout.PropertyField(_extrusionHeight, new GUIContent("Height"));
     }
 
     void DrawModifierGUI(SerializedProperty use, params SerializedProperty[] props)

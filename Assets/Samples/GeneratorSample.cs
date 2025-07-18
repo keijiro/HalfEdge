@@ -13,8 +13,7 @@ public class GeneratorSample : MonoBehaviour
     public enum GeneratorType
     {
         Box, Plane, Sphere, Icosphere, Cylinder, Cone, Torus,
-        Tetrahedron, Octahedron, Dodecahedron,
-        Lathe, Extrusion
+        Tetrahedron, Octahedron, Dodecahedron
     }
 
     [SerializeField] GeneratorType _generatorType = GeneratorType.Box;
@@ -55,28 +54,6 @@ public class GeneratorSample : MonoBehaviour
 
     // Polyhedron
     [SerializeField] float _polyhedronSize = 1f;
-
-    // Lathe
-    [SerializeField] List<float2> _latheProfile = new List<float2>
-    {
-        new float2(0.0f, -1.0f),
-        new float2(0.5f, -0.8f),
-        new float2(0.8f, -0.2f),
-        new float2(0.8f, 0.2f),
-        new float2(0.5f, 0.8f),
-        new float2(0.0f, 1.0f)
-    };
-    [SerializeField] int _latheSegments = 16;
-
-    // Extrusion
-    [SerializeField] List<float3> _extrusionProfile = new List<float3>
-    {
-        new float3(-1f, 0f, -1f),
-        new float3(1f, 0f, -1f),
-        new float3(1f, 0f, 1f),
-        new float3(-1f, 0f, 1f)
-    };
-    [SerializeField] float _extrusionHeight = 2f;
 
 
     #endregion
@@ -139,7 +116,6 @@ public class GeneratorSample : MonoBehaviour
         _coneSegments = Mathf.Max(3, _coneSegments);
         _torusSegments.x = Mathf.Max(3, _torusSegments.x);
         _torusSegments.y = Mathf.Max(3, _torusSegments.y);
-        _latheSegments = Mathf.Max(3, _latheSegments);
         _planeSegments.x = Mathf.Max(1, _planeSegments.x);
         _planeSegments.y = Mathf.Max(1, _planeSegments.y);
         _sphereSegments.x = Mathf.Max(3, _sphereSegments.x);
@@ -202,8 +178,6 @@ public class GeneratorSample : MonoBehaviour
             case GeneratorType.Tetrahedron: return new Tetrahedron(_polyhedronSize).Generate();
             case GeneratorType.Octahedron: return new Octahedron(_polyhedronSize).Generate();
             case GeneratorType.Dodecahedron: return new Dodecahedron(_polyhedronSize).Generate();
-            case GeneratorType.Lathe: return new Lathe(_latheProfile, _latheSegments).Generate();
-            case GeneratorType.Extrusion: return new Extrusion(_extrusionProfile, _extrusionHeight).Generate();
         }
         return null;
     }
