@@ -11,6 +11,7 @@ public class GeneratorSampleEditor : Editor
     // Generator properties
     SerializedProperty _subdivisions;
     SerializedProperty _boxSize;
+    SerializedProperty _boxSegments;
     SerializedProperty _planeSegments;
     SerializedProperty _planeSize;
     SerializedProperty _sphereRadius;
@@ -69,6 +70,7 @@ public class GeneratorSampleEditor : Editor
         // Generator properties
         _subdivisions = serializedObject.FindProperty("_subdivisions");
         _boxSize = serializedObject.FindProperty("_boxSize");
+        _boxSegments = serializedObject.FindProperty("_boxSegments");
         _planeSegments = serializedObject.FindProperty("_planeSegments");
         _planeSize = serializedObject.FindProperty("_planeSize");
         _sphereRadius = serializedObject.FindProperty("_sphereRadius");
@@ -172,7 +174,7 @@ public class GeneratorSampleEditor : Editor
     void DrawBoxGUI()
     {
         EditorGUILayout.PropertyField(_boxSize, new GUIContent("Size"));
-        EditorGUILayout.PropertyField(_subdivisions, new GUIContent("Subdivisions"));
+        EditorGUILayout.PropertyField(_boxSegments, new GUIContent("Segments"));
     }
 
     void DrawPlaneGUI()

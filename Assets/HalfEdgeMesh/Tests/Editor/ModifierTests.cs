@@ -9,7 +9,7 @@ public class ModifierTests
     [Test]
     public void ExtrudeFaces_ExtrudesAllFaces()
     {
-        var generator = new Box(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
         var mesh = generator.Generate();
 
         var originalFaceCount = mesh.Faces.Count;
@@ -25,7 +25,7 @@ public class ModifierTests
     [Test]
     public void StretchMesh_ScalesUniformly()
     {
-        var generator = new Box(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
         var mesh = generator.Generate();
 
         var scaleFactor = 2f;
@@ -246,7 +246,7 @@ public class ModifierTests
     public void SmoothVertices_SmoothsVertices()
     {
         // Test with simple box first (no subdivision)
-        var generator = new Box(1f, 1f, 1f, 0);
+        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
         var mesh = generator.Generate();
 
         var originalPositions = new float3[mesh.Vertices.Count];

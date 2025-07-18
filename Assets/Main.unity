@@ -425,6 +425,10 @@ MonoBehaviour:
     x: 3
     y: 2
     z: 1
+  _boxSegments:
+    x: 1
+    y: 1
+    z: 1
   _planeSegments:
     x: 8
     y: 8
@@ -491,12 +495,10 @@ MonoBehaviour:
     z: 0
   _useChamferVertices: 0
   _chamferVertexDistance: 0.3
-  _useChamferEdges: 1
+  _useChamferEdges: 0
   _chamferEdgeDistance: 0.2
   _useExtrude: 0
   _extrudeDistance: 0.3
-  _useCreateLattice: 0
-  _latticeSpacing: 0.1
   _useSplitFaces: 0
   _splitPlaneNormal:
     x: 0

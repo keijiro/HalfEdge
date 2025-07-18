@@ -24,6 +24,7 @@ public class GeneratorSample : MonoBehaviour
 
     // Box
     [SerializeField] float3 _boxSize = new float3(2f, 1f, 1.5f);
+    [SerializeField] int3 _boxSegments = new int3(1, 1, 1);
 
     // Plane
     [SerializeField] int2 _planeSegments = new int2(8, 8);
@@ -162,6 +163,9 @@ public class GeneratorSample : MonoBehaviour
         _planeSegments.y = Mathf.Max(1, _planeSegments.y);
         _sphereResolution = Mathf.Max(1, _sphereResolution);
         _subdivisions = Mathf.Max(0, _subdivisions);
+        _boxSegments.x = Mathf.Max(1, _boxSegments.x);
+        _boxSegments.y = Mathf.Max(1, _boxSegments.y);
+        _boxSegments.z = Mathf.Max(1, _boxSegments.z);
 
         _dirty = true;
     }
@@ -206,7 +210,7 @@ public class GeneratorSample : MonoBehaviour
     {
         switch (_generatorType)
         {
-            case GeneratorType.Box: return new Box(_boxSize.x, _boxSize.y, _boxSize.z, _subdivisions).Generate();
+            case GeneratorType.Box: return new Box(_boxSize.x, _boxSize.y, _boxSize.z, _boxSegments).Generate();
             case GeneratorType.Plane: return new HalfEdgeMesh.Generators.Plane(_planeSegments.x, _planeSegments.y, _planeSize).Generate();
             case GeneratorType.Sphere: return new Sphere(_sphereRadius, _sphereResolution).Generate();
             case GeneratorType.Icosphere: return new Icosphere(_icosphereRadius, _subdivisions).Generate();
