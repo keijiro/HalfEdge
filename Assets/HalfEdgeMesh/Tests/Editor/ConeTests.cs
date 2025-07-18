@@ -33,26 +33,26 @@ namespace HalfEdgeMesh.Tests
             var generator = new Cone(radius, height, 8);
             var mesh = generator.Generate();
 
-            // Check apex position
+            // Check apex position (Z-axis as vertical)
             var apex = mesh.Vertices[0];
             Assert.AreEqual(0, apex.Position.x, 0.001f);
-            Assert.AreEqual(height * 0.5f, apex.Position.y, 0.001f);
-            Assert.AreEqual(0, apex.Position.z, 0.001f);
+            Assert.AreEqual(0, apex.Position.y, 0.001f);
+            Assert.AreEqual(height * 0.5f, apex.Position.z, 0.001f);
 
             // Check base center
             var baseCenter = mesh.Vertices[1];
             Assert.AreEqual(0, baseCenter.Position.x, 0.001f);
-            Assert.AreEqual(-height * 0.5f, baseCenter.Position.y, 0.001f);
-            Assert.AreEqual(0, baseCenter.Position.z, 0.001f);
+            Assert.AreEqual(0, baseCenter.Position.y, 0.001f);
+            Assert.AreEqual(-height * 0.5f, baseCenter.Position.z, 0.001f);
 
             // Check rim vertices
             for (int i = 2; i < mesh.Vertices.Count; i++)
             {
                 var vertex = mesh.Vertices[i];
                 var distance = math.sqrt(vertex.Position.x * vertex.Position.x + 
-                                       vertex.Position.z * vertex.Position.z);
+                                       vertex.Position.y * vertex.Position.y);
                 Assert.AreEqual(radius, distance, 0.001f);
-                Assert.AreEqual(-height * 0.5f, vertex.Position.y, 0.001f);
+                Assert.AreEqual(-height * 0.5f, vertex.Position.z, 0.001f);
             }
         }
 
@@ -119,17 +119,17 @@ namespace HalfEdgeMesh.Tests
                 var normal = math.normalize(math.cross(edge1, edge2));
                 var center = (v0 + v1 + v2) / 3.0f;
 
-                // For side faces
-                if (math.abs(center.y) > 0.1f)
+                // For side faces (Z-axis as vertical)
+                if (math.abs(center.z) > 0.1f)
                 {
-                    var radialDir = math.normalize(new float3(center.x, 0, center.z));
+                    var radialDir = math.normalize(new float3(center.x, center.y, 0));
                     var dotProduct = math.dot(normal, radialDir);
                     Assert.Greater(dotProduct, -0.1f, "Side face normal should point generally outward");
                 }
                 // For base faces
                 else
                 {
-                    Assert.Less(normal.y, -0.9f, "Base face normal should point downward");
+                    Assert.Less(normal.z, -0.9f, "Base face normal should point downward (negative Z)");
                 }
             }
         }

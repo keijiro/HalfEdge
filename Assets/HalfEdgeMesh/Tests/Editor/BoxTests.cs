@@ -11,7 +11,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_NoSubdivisions_Creates6FacesAnd8Vertices()
         {
-            var generator = new Box(1, 1, 1, new int3(1, 1, 1));
+            var generator = new Box(new float3(1, 1, 1), new int3(1, 1, 1));
             var mesh = generator.Generate();
 
             Assert.AreEqual(8, mesh.Vertices.Count);
@@ -26,7 +26,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_OneSubdivision_CreatesCorrectTopology()
         {
-            var generator = new Box(1, 1, 1, new int3(2, 2, 2));
+            var generator = new Box(new float3(1, 1, 1), new int3(2, 2, 2));
             var mesh = generator.Generate();
 
             // Each face has 2x2 = 4 quads, total 6 faces * 4 = 24 quads
@@ -45,7 +45,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_TwoSubdivisions_CreatesCorrectTopology()
         {
-            var generator = new Box(1, 1, 1, new int3(4, 4, 4));
+            var generator = new Box(new float3(1, 1, 1), new int3(4, 4, 4));
             var mesh = generator.Generate();
 
             // Each face has 4x4 = 16 quads, total 6 faces * 16 = 96 quads
@@ -61,7 +61,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_SubdividedFaces_HaveCorrectConnectivity()
         {
-            var generator = new Box(1, 1, 1, new int3(2, 2, 2));
+            var generator = new Box(new float3(1, 1, 1), new int3(2, 2, 2));
             var mesh = generator.Generate();
 
             // Check that all edges have proper twin connections
@@ -102,7 +102,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_SubdividedBox_PreservesBoxShape()
         {
-            var generator = new Box(2, 2, 2, new int3(2, 2, 2));
+            var generator = new Box(new float3(2, 2, 2), new int3(2, 2, 2));
             var mesh = generator.Generate();
 
             // Check that all vertices are within the box bounds
@@ -126,7 +126,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_SimpleCube_HasCorrectFaceNormals()
         {
-            var generator = new Box(2, 2, 2, new int3(1, 1, 1));
+            var generator = new Box(new float3(2, 2, 2), new int3(1, 1, 1));
             var mesh = generator.Generate();
             var unityMesh = mesh.ToUnityMesh();
 
@@ -161,7 +161,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_SimpleCube_HasCorrectWindingOrder()
         {
-            var generator = new Box(2, 2, 2, new int3(1, 1, 1));
+            var generator = new Box(new float3(2, 2, 2), new int3(1, 1, 1));
             var mesh = generator.Generate();
 
             // Check winding order for each face

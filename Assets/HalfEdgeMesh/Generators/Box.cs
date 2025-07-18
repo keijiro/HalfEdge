@@ -5,16 +5,12 @@ namespace HalfEdgeMesh.Generators
 {
     public class Box
     {
-        float width;
-        float height;
-        float depth;
+        float3 size;
         int3 segments;
 
-        public Box(float width, float height, float depth, int3 segments)
+        public Box(float3 size, int3 segments)
         {
-            this.width = width;
-            this.height = height;
-            this.depth = depth;
+            this.size = size;
             this.segments = math.max(segments, 1);
         }
 
@@ -25,9 +21,9 @@ namespace HalfEdgeMesh.Generators
             var faces = new List<int[]>();
             var vertexMap = new Dictionary<float3, int>();
 
-            var hw = width * 0.5f;
-            var hh = height * 0.5f;
-            var hd = depth * 0.5f;
+            var hw = size.x * 0.5f;
+            var hh = size.y * 0.5f;
+            var hd = size.z * 0.5f;
 
             // Front face (-Z)
             CreateFace(vertices, faces, vertexMap,

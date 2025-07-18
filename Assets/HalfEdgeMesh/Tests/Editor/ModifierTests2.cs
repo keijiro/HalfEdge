@@ -10,7 +10,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void ChamferVertices_ApplyToBox_CreatesValidMesh()
         {
-            var generator = new Box(1, 1, 1, new int3(1, 1, 1));
+            var generator = new Box(new float3(1, 1, 1), new int3(1, 1, 1));
             var mesh = generator.Generate();
             
             var chamfered = ChamferVertices.Apply(mesh, 0.1f);
@@ -23,7 +23,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void ExpandVertices_ApplyToBox_CreatesValidMesh()
         {
-            var generator = new Box(1, 1, 1, new int3(1, 1, 1));
+            var generator = new Box(new float3(1, 1, 1), new int3(1, 1, 1));
             var mesh = generator.Generate();
             var originalVertexCount = mesh.Vertices.Count;
             var originalFaceCount = mesh.Faces.Count;

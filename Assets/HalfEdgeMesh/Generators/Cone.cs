@@ -22,11 +22,11 @@ namespace HalfEdgeMesh.Generators
             var vertices = new List<float3>();
             var faces = new List<int[]>();
 
-            // Add apex vertex
-            vertices.Add(new float3(0, height * 0.5f, 0));
+            // Add apex vertex (Z-axis as vertical)
+            vertices.Add(new float3(0, 0, height * 0.5f));
 
             // Add base center vertex
-            vertices.Add(new float3(0, -height * 0.5f, 0));
+            vertices.Add(new float3(0, 0, -height * 0.5f));
 
             // Add base rim vertices
             var angleStep = math.PI * 2.0f / segments;
@@ -34,22 +34,22 @@ namespace HalfEdgeMesh.Generators
             {
                 var angle = i * angleStep;
                 var x = math.cos(angle) * radius;
-                var z = math.sin(angle) * radius;
-                vertices.Add(new float3(x, -height * 0.5f, z));
+                var y = math.sin(angle) * radius;
+                vertices.Add(new float3(x, y, -height * 0.5f));
             }
 
             // Create side faces (triangles from apex to base rim)
             for (int i = 0; i < segments; i++)
             {
                 var next = (i + 1) % segments;
-                faces.Add(new int[] { 0, 2 + next, 2 + i });
+                faces.Add(new int[] { 0, 2 + i, 2 + next });
             }
 
             // Create base face (triangle fan from center to rim)
             for (int i = 0; i < segments; i++)
             {
                 var next = (i + 1) % segments;
-                faces.Add(new int[] { 1, 2 + next, 2 + i });
+                faces.Add(new int[] { 1, 2 + i, 2 + next });
             }
 
             meshData.InitializeFromIndexedFaces(vertices.ToArray(), faces.ToArray());

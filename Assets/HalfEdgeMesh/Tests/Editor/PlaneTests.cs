@@ -9,7 +9,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_SingleSegment_CreatesOneFaceAndFourVertices()
         {
-            var generator = new Plane(1, 1, 1);
+            var generator = new Plane(new float2(1, 1), new int2(1, 1));
             var mesh = generator.Generate();
 
             Assert.AreEqual(4, mesh.Vertices.Count);
@@ -20,7 +20,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_MultipleSegments_CreatesCorrectTopology()
         {
-            var generator = new Plane(3, 2, 2);
+            var generator = new Plane(new float2(2, 2), new int2(3, 2));
             var mesh = generator.Generate();
 
             // (widthSegments + 1) * (heightSegments + 1) vertices
@@ -35,23 +35,23 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_VerticesPositioned_CorrectlyOnPlane()
         {
-            var generator = new Plane(2, 2, 2);
+            var generator = new Plane(new float2(2, 2), new int2(2, 2));
             var mesh = generator.Generate();
 
             foreach (var vertex in mesh.Vertices)
             {
-                // All vertices should have Y = 0 (on XZ plane)
-                Assert.AreEqual(0, vertex.Position.y, 0.001f);
-                // All vertices should be within bounds
-                Assert.LessOrEqual(math.abs(vertex.Position.x), 1.01f);
-                Assert.LessOrEqual(math.abs(vertex.Position.z), 1.01f);
+                // All vertices should have Z = 0 (on XY plane)
+                Assert.AreEqual(0, vertex.Position.z, 0.001f);
+                // All vertices should be within bounds for a 2x2 plane (range should be [-1, 1])
+                Assert.LessOrEqual(math.abs(vertex.Position.x), 1.0f);
+                Assert.LessOrEqual(math.abs(vertex.Position.y), 1.0f);
             }
         }
 
         [Test]
         public void Generate_CorrectVertexOrder_ForWindingConsistency()
         {
-            var generator = new Plane(2, 2, 2);
+            var generator = new Plane(new float2(2, 2), new int2(2, 2));
             var mesh = generator.Generate();
 
             foreach (var face in mesh.Faces)
@@ -66,15 +66,15 @@ namespace HalfEdgeMesh.Tests
                 var edge2 = v2 - v0;
                 var normal = math.normalize(math.cross(edge1, edge2));
 
-                // For a plane in XZ, normal should point up (positive Y)
-                Assert.Greater(normal.y, 0.9f, "Face normal should point upward");
+                // For a plane in XY, normal should point up (positive Z)
+                Assert.Greater(normal.z, 0.9f, "Face normal should point upward");
             }
         }
 
         [Test]
         public void Generate_ConnectivityValid_InternalEdgesHaveTwins()
         {
-            var generator = new Plane(3, 3, 3);
+            var generator = new Plane(new float2(3, 3), new int2(3, 3));
             var mesh = generator.Generate();
 
             // Check internal edges have twins

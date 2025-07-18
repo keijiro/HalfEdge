@@ -9,7 +9,7 @@ public class MeshExportTests
     [Test]
     public void ToUnityMesh_GeneratesValidMesh()
     {
-        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
+        var generator = new Box(new float3(1f, 1f, 1f), new int3(1, 1, 1));
         var mesh = generator.Generate();
 
         var unityMesh = mesh.ToUnityMesh();
@@ -75,7 +75,7 @@ public class MeshExportTests
     [Test]
     public void HalfEdge_Topology_IsConsistent()
     {
-        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
+        var generator = new Box(new float3(1f, 1f, 1f), new int3(1, 1, 1));
         var mesh = generator.Generate();
 
         foreach (var halfEdge in mesh.HalfEdges)

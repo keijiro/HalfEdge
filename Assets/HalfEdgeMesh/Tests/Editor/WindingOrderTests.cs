@@ -9,7 +9,7 @@ public class WindingOrderTests
     [Test]
     public void Box_HasCorrectWindingOrder()
     {
-        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
+        var generator = new Box(new float3(1f, 1f, 1f), new int3(1, 1, 1));
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
 
@@ -19,7 +19,7 @@ public class WindingOrderTests
     [Test]
     public void Box_WithSubdivision_HasCorrectWindingOrder()
     {
-        var generator = new Box(1f, 1f, 1f, new int3(2, 2, 2));
+        var generator = new Box(new float3(1f, 1f, 1f), new int3(2, 2, 2));
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
 
@@ -41,7 +41,7 @@ public class WindingOrderTests
     [Test]
     public void Cylinder_HasCorrectWindingOrder()
     {
-        var generator = new Cylinder(1f, 2f, 8);
+        var generator = new Cylinder(1f, 2f, new int2(8, 1));
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh();
 

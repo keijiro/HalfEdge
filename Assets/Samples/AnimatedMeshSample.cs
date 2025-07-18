@@ -21,7 +21,7 @@ public class AnimatedMeshSample : MonoBehaviour
 
     void GenerateBaseMesh()
     {
-        var generator = new Cylinder(1f, 3f, segments, heightSegments, true);
+        var generator = new Cylinder(1f, 3f, new int2(segments, heightSegments), true);
         baseMesh = generator.Generate();
     }
 
@@ -29,7 +29,7 @@ public class AnimatedMeshSample : MonoBehaviour
     {
         if (baseMesh == null) return;
 
-        var generator = new Cylinder(1f, 3f, segments, heightSegments, true);
+        var generator = new Cylinder(1f, 3f, new int2(segments, heightSegments), true);
         var meshData = generator.Generate();
 
         var twistAmount = Mathf.Sin(Time.time * animationSpeed) * maxTwistAngle * Mathf.Deg2Rad;

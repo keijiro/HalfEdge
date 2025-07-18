@@ -10,7 +10,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void ChamferEdges_ApplyToBox_CreatesValidMesh()
         {
-            var generator = new Box(1, 1, 1, new int3(1, 1, 1));
+            var generator = new Box(new float3(1, 1, 1), new int3(1, 1, 1));
             var mesh = generator.Generate();
             
             var chamfered = ChamferEdges.Apply(mesh, 0.1f);
@@ -31,7 +31,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void SplitFaces_ApplyToPlane_CreatesValidMesh()
         {
-            var generator = new HalfEdgeMesh.Generators.Plane(2, 2, 2);
+            var generator = new HalfEdgeMesh.Generators.Plane(new float2(2, 2), new int2(2, 2));
             var mesh = generator.Generate();
             
             var planeNormal = new float3(1, 0, 0);
@@ -53,7 +53,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void SkewMesh_ApplyToBox_CreatesValidMesh()
         {
-            var generator = new Box(1, 1, 1, new int3(1, 1, 1));
+            var generator = new Box(new float3(1, 1, 1), new int3(1, 1, 1));
             var mesh = generator.Generate();
             var originalVertexCount = mesh.Vertices.Count;
             var originalFaceCount = mesh.Faces.Count;
@@ -74,7 +74,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void SplitFaces_WithNonIntersectingPlane_PreservesOriginalMesh()
         {
-            var generator = new Box(1, 1, 1, new int3(1, 1, 1));
+            var generator = new Box(new float3(1, 1, 1), new int3(1, 1, 1));
             var mesh = generator.Generate();
             
             // Plane that doesn't intersect the box

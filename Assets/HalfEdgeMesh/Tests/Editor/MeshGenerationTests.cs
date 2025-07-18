@@ -8,7 +8,7 @@ public class MeshGenerationTests
     [Test]
     public void Box_GeneratesExpectedVertexCount()
     {
-        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
+        var generator = new Box(new float3(1f, 1f, 1f), new int3(1, 1, 1));
         var mesh = generator.Generate();
         Assert.AreEqual(8, mesh.Vertices.Count);
     }
@@ -16,7 +16,7 @@ public class MeshGenerationTests
     [Test]
     public void Box_GeneratesExpectedFaceCount()
     {
-        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
+        var generator = new Box(new float3(1f, 1f, 1f), new int3(1, 1, 1));
         var mesh = generator.Generate();
         Assert.AreEqual(6, mesh.Faces.Count);
     }
@@ -25,7 +25,7 @@ public class MeshGenerationTests
     public void Cylinder_GeneratesCorrectVertexCount()
     {
         var segments = 8;
-        var generator = new Cylinder(1f, 2f, segments, true);
+        var generator = new Cylinder(1f, 2f, new int2(segments, 1), true);
         var mesh = generator.Generate();
         Assert.AreEqual(segments * 2 + 2, mesh.Vertices.Count);
     }
@@ -74,7 +74,7 @@ public class MeshGenerationTests
     [Test]
     public void ToUnityMesh_SmoothShading_SharesVertices()
     {
-        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
+        var generator = new Box(new float3(1f, 1f, 1f), new int3(1, 1, 1));
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh(Mesh.NormalGenerationMode.Smooth);
 
@@ -87,7 +87,7 @@ public class MeshGenerationTests
     [Test]
     public void ToUnityMesh_FlatShading_DuplicatesVertices()
     {
-        var generator = new Box(1f, 1f, 1f, new int3(1, 1, 1));
+        var generator = new Box(new float3(1f, 1f, 1f), new int3(1, 1, 1));
         var meshData = generator.Generate();
         var unityMesh = meshData.ToUnityMesh(Mesh.NormalGenerationMode.Flat);
 

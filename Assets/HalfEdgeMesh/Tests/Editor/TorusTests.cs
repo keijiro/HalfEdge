@@ -11,7 +11,7 @@ namespace HalfEdgeMesh.Tests
         {
             var majorSegments = 8;
             var minorSegments = 6;
-            var generator = new Torus(1.0f, 0.3f, majorSegments, minorSegments);
+            var generator = new Torus(1.0f, 0.3f, new int2(majorSegments, minorSegments));
             var mesh = generator.Generate();
 
             // Vertices: majorSegments * minorSegments
@@ -30,21 +30,21 @@ namespace HalfEdgeMesh.Tests
         {
             var majorRadius = 2.0f;
             var minorRadius = 0.5f;
-            var generator = new Torus(majorRadius, minorRadius, 12, 8);
+            var generator = new Torus(majorRadius, minorRadius, new int2(12, 8));
             var mesh = generator.Generate();
 
             foreach (var vertex in mesh.Vertices)
             {
                 var pos = vertex.Position;
                 
-                // Distance from Y axis
-                var distFromYAxis = math.sqrt(pos.x * pos.x + pos.z * pos.z);
+                // Distance from Z axis (new vertical axis)
+                var distFromZAxis = math.sqrt(pos.x * pos.x + pos.y * pos.y);
                 
                 // Distance from major circle
-                var distFromMajorCircle = math.abs(distFromYAxis - majorRadius);
+                var distFromMajorCircle = math.abs(distFromZAxis - majorRadius);
                 
                 // Distance from torus center on minor circle
-                var distFromMinorCenter = math.sqrt(distFromMajorCircle * distFromMajorCircle + pos.y * pos.y);
+                var distFromMinorCenter = math.sqrt(distFromMajorCircle * distFromMajorCircle + pos.z * pos.z);
                 
                 Assert.AreEqual(minorRadius, distFromMinorCenter, 0.001f);
             }
@@ -53,7 +53,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_ConnectivityValid()
         {
-            var generator = new Torus(1.0f, 0.3f, 10, 8);
+            var generator = new Torus(1.0f, 0.3f, new int2(10, 8));
             var mesh = generator.Generate();
 
             // All edges should have twins (closed mesh)
@@ -89,7 +89,7 @@ namespace HalfEdgeMesh.Tests
         [Test]
         public void Generate_FaceNormals_PointOutward()
         {
-            var generator = new Torus(1.0f, 0.3f, 8, 6);
+            var generator = new Torus(1.0f, 0.3f, new int2(8, 6));
             var mesh = generator.Generate();
 
             foreach (var face in mesh.Faces)
@@ -104,8 +104,8 @@ namespace HalfEdgeMesh.Tests
                 var normal = math.normalize(math.cross(edge1, edge2));
                 var center = (v0 + v1 + v2 + vertices[3].Position) / 4.0f;
 
-                // Project center to major circle
-                var majorCirclePoint = new float3(center.x, 0, center.z);
+                // Project center to major circle (now in XY plane, Z=0)
+                var majorCirclePoint = new float3(center.x, center.y, 0);
                 majorCirclePoint = math.normalize(majorCirclePoint) * 1.0f; // majorRadius
 
                 // Vector from major circle to face center
@@ -129,7 +129,7 @@ namespace HalfEdgeMesh.Tests
 
             foreach (var (major, minor) in parameters)
             {
-                var generator = new Torus(2.0f, 0.5f, major, minor);
+                var generator = new Torus(2.0f, 0.5f, new int2(major, minor));
                 var mesh = generator.Generate();
 
                 Assert.AreEqual(major * minor, mesh.Vertices.Count);
