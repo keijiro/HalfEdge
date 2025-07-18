@@ -422,7 +422,7 @@ MonoBehaviour:
   _generatorType: 0
   _subdivisions: 0
   _boxSize:
-    x: 2
+    x: 3
     y: 2
     z: 1
   _planeSegments:
@@ -490,7 +490,7 @@ MonoBehaviour:
     y: 2
     z: 0
   _useChamferVertices: 0
-  _chamferVertexDistance: 0.2
+  _chamferVertexDistance: 0.3
   _useChamferEdges: 1
   _chamferEdgeDistance: 0.2
   _useExtrude: 0

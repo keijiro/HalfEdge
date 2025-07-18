@@ -23,19 +23,43 @@ namespace HalfEdgeMesh.Modifiers
                 var faceVertices = face.GetVertices();
                 if (faceVertices.Count < 3) continue;
                 
-                // Calculate face center
-                var center = float3.zero;
-                foreach (var vertex in faceVertices)
-                    center += vertex.Position;
-                center /= faceVertices.Count;
-                
-                // Create new vertices moved toward center
+                // Create new vertices moved along angle bisector
                 var newFaceIndices = new List<int>();
+                var vertexCount = faceVertices.Count;
                 
-                foreach (var vertex in faceVertices)
+                for (int i = 0; i < vertexCount; i++)
                 {
-                    var direction = math.normalize(center - vertex.Position);
-                    var newPos = vertex.Position + direction * distance;
+                    var vertex = faceVertices[i];
+                    var prevVertex = faceVertices[(i - 1 + vertexCount) % vertexCount];
+                    var nextVertex = faceVertices[(i + 1) % vertexCount];
+                    
+                    // Calculate edge vectors from current vertex to adjacent vertices
+                    var toPrev = prevVertex.Position - vertex.Position;
+                    var toNext = nextVertex.Position - vertex.Position;
+                    
+                    // Calculate face normal (assuming counter-clockwise winding)
+                    var faceNormal = math.normalize(math.cross(toPrev, toNext));
+                    
+                    // Calculate edge normals (perpendicular to edge, pointing inward)
+                    var edgeNormal1 = math.normalize(math.cross(faceNormal, toPrev));
+                    var edgeNormal2 = math.normalize(math.cross(toNext, faceNormal));
+                    
+                    // Average the edge normals to get the bisector direction
+                    var bisector = math.normalize(edgeNormal1 + edgeNormal2);
+                    
+                    // Calculate the angle between edges
+                    var cosAngle = math.dot(math.normalize(toPrev), math.normalize(toNext));
+                    var sinHalfAngle = math.sqrt((1f - cosAngle) / 2f);
+                    
+                    // Scale factor to maintain consistent edge offset
+                    var scale = 1f;
+                    if (sinHalfAngle > 0.001f)
+                        scale = 1f / sinHalfAngle;
+                    
+                    // Clamp the scale to avoid extreme values
+                    scale = math.min(scale, 10f);
+                    
+                    var newPos = vertex.Position + bisector * distance * scale;
                     
                     vertices.Add(newPos);
                     var newIndex = vertices.Count - 1;

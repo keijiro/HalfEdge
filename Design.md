@@ -87,7 +87,6 @@ The following modifiers are included:
 #### Static Methods (Complex Topology Changes)
 - `ChamferVertices.Apply(Mesh mesh, float distance)` - Replaces vertices with chamfered corners
 - `ChamferEdges.Apply(Mesh mesh, float distance)` - Replaces edges with chamfered faces
-- `CreateLattice.Apply(Mesh mesh, float spacing)` - Creates lattice structure
 - `SplitFaces.Apply(Mesh mesh, float3 planeNormal, float3 planePoint)` - Splits faces with plane
 
 **Usage Pattern:**
