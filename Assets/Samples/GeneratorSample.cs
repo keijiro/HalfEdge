@@ -110,8 +110,6 @@ public class GeneratorSample : MonoBehaviour
     [SerializeField] bool _useExtrude = false;
     [SerializeField] float _extrudeDistance = 0.3f;
 
-    [SerializeField] bool _useCreateLattice = false;
-    [SerializeField] float _latticeSpacing = 0.1f;
 
     [SerializeField] bool _useSplitFaces = false;
     [SerializeField] float3 _splitPlaneNormal = new float3(0, 1, 0);
@@ -230,7 +228,6 @@ public class GeneratorSample : MonoBehaviour
         if (_useChamferVertices) mesh = ChamferVertices.Apply(mesh, _chamferVertexDistance);
         if (_useChamferEdges) mesh = ChamferEdges.Apply(mesh, _chamferEdgeDistance);
         if (_useExtrude) new ExtrudeFaces(_extrudeDistance, true).Apply(mesh);
-        if (_useCreateLattice) mesh = CreateLattice.Apply(mesh, _latticeSpacing);
         if (_useSplitFaces) mesh = SplitFaces.Apply(mesh, _splitPlaneNormal, _splitPlanePoint);
         if (_useSkew) new SkewMesh(_skewAngle * Mathf.Deg2Rad, _skewDirection).Apply(mesh);
         if (_useSmooth) new SmoothVertices(0.5f, _smoothIterations).Apply(mesh);

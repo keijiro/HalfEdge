@@ -27,20 +27,6 @@ namespace HalfEdgeMesh.Tests
             }
         }
 
-        [Test]
-        public void CreateLattice_ApplyToBox_CreatesValidMesh()
-        {
-            var generator = new Box(1, 1, 1);
-            var mesh = generator.Generate();
-            
-            var lattice = CreateLattice.Apply(mesh, 3.0f); // Large spacing for fewer connections
-            
-            Assert.Greater(lattice.Vertices.Count, 0);
-            Assert.Greater(lattice.Faces.Count, 0);
-            
-            // Basic validation only
-            Assert.IsNotNull(lattice);
-        }
 
         [Test]
         public void SplitFaces_ApplyToPlane_CreatesValidMesh()
@@ -101,17 +87,5 @@ namespace HalfEdgeMesh.Tests
             Assert.AreEqual(mesh.Faces.Count, split.Faces.Count);
         }
 
-        [Test]
-        public void CreateLattice_WithDifferentSpacing_ProducesValidResults()
-        {
-            var generator = new Tetrahedron(1.0f);
-            var mesh = generator.Generate();
-            
-            var lattice = CreateLattice.Apply(mesh, 2.0f);
-            
-            // Just verify it produces valid output
-            Assert.IsNotNull(lattice);
-            Assert.Greater(lattice.Vertices.Count, 0);
-        }
     }
 }

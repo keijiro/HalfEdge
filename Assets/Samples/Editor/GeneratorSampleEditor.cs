@@ -43,8 +43,6 @@ public class GeneratorSampleEditor : Editor
     SerializedProperty _chamferEdgeDistance;
     SerializedProperty _useExtrude;
     SerializedProperty _extrudeDistance;
-    SerializedProperty _useCreateLattice;
-    SerializedProperty _latticeSpacing;
     SerializedProperty _useSplitFaces;
     SerializedProperty _splitPlaneNormal;
     SerializedProperty _splitPlanePoint;
@@ -103,8 +101,6 @@ public class GeneratorSampleEditor : Editor
         _chamferEdgeDistance = serializedObject.FindProperty("_chamferEdgeDistance");
         _useExtrude = serializedObject.FindProperty("_useExtrude");
         _extrudeDistance = serializedObject.FindProperty("_extrudeDistance");
-        _useCreateLattice = serializedObject.FindProperty("_useCreateLattice");
-        _latticeSpacing = serializedObject.FindProperty("_latticeSpacing");
         _useSplitFaces = serializedObject.FindProperty("_useSplitFaces");
         _splitPlaneNormal = serializedObject.FindProperty("_splitPlaneNormal");
         _splitPlanePoint = serializedObject.FindProperty("_splitPlanePoint");
@@ -159,7 +155,6 @@ public class GeneratorSampleEditor : Editor
         DrawModifierGUI(_useChamferVertices, _chamferVertexDistance);
         DrawModifierGUI(_useChamferEdges, _chamferEdgeDistance);
         DrawModifierGUI(_useExtrude, _extrudeDistance);
-        DrawModifierGUI(_useCreateLattice, _latticeSpacing);
         DrawModifierGUI(_useSplitFaces, _splitPlaneNormal, _splitPlanePoint);
         DrawModifierGUI(_useSkew, _skewAngle, _skewDirection);
         DrawModifierGUI(_useSmooth, _smoothIterations);

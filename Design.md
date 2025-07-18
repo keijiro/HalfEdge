@@ -98,7 +98,6 @@ new SmoothVertices(0.5f, 3).Apply(mesh);
 // Static method pattern (returns new mesh)
 mesh = ChamferVertices.Apply(mesh, 0.1f);
 mesh = ChamferEdges.Apply(mesh, 0.1f);
-mesh = CreateLattice.Apply(mesh, 0.2f);
 ```
 
 Each modifier provides a clear and consistent API for applying a specific type
