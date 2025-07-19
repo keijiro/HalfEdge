@@ -28,13 +28,13 @@ namespace HalfEdgeMesh2.Samples
         {
             var currentSize = size;
             var currentSegments = segments;
-            
+
             if (animateSize)
             {
                 var t = Time.time;
                 var sizeVariation = new float3(
                     0.5f * math.sin(t * 0.7f),
-                    0.3f * math.cos(t * 0.9f), 
+                    0.3f * math.cos(t * 0.9f),
                     0.4f * math.sin(t * 1.1f)
                 );
                 currentSize += sizeVariation;

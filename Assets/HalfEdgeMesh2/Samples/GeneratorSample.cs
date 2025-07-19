@@ -29,22 +29,22 @@ namespace HalfEdgeMesh2.Samples
         bool needsMeshInitialization;
         GeneratorType lastGeneratorType;
         NormalGenerationMode lastNormalMode;
-        
+
         // Box state
         float3 lastBoxSize;
         int3 lastBoxSegments;
-        
+
         // Sphere state
         float lastSphereRadius;
         int2 lastSphereSegments;
-        
+
         // Animation state
         bool lastAnimateSize;
 
         void Start()
         {
             meshFilter = GetComponent<MeshFilter>();
-            
+
             // Create managed mesh with DontSave flag
             if (generatedMesh == null)
             {
@@ -52,7 +52,7 @@ namespace HalfEdgeMesh2.Samples
                 generatedMesh.name = "Generated Mesh";
                 generatedMesh.hideFlags = HideFlags.DontSave;
             }
-            
+
             meshFilter.sharedMesh = generatedMesh;
             UpdateState();
             GenerateMesh();
@@ -66,12 +66,12 @@ namespace HalfEdgeMesh2.Samples
                 InitializeMeshIfNeeded();
                 needsMeshInitialization = false;
             }
-            
+
             var needsUpdate = HasChanges();
-            
+
             // Only animate in play mode
             var shouldAnimate = animateSize && Application.isPlaying;
-            
+
             if (shouldAnimate || needsUpdate)
             {
                 GenerateMesh();
@@ -104,7 +104,7 @@ namespace HalfEdgeMesh2.Samples
         void GenerateMesh()
         {
             MeshData meshData;
-            
+
             switch (generatorType)
             {
                 case GeneratorType.Box:
@@ -182,7 +182,7 @@ namespace HalfEdgeMesh2.Samples
             sphereSegments = math.max(sphereSegments, 3);
             sphereRadius = math.max(sphereRadius, 0.01f);
             boxSize = math.max(boxSize, 0.01f);
-            
+
             // Schedule mesh initialization for next Update
             needsMeshInitialization = true;
         }
@@ -191,7 +191,7 @@ namespace HalfEdgeMesh2.Samples
         {
             if (meshFilter == null)
                 meshFilter = GetComponent<MeshFilter>();
-                
+
             if (generatedMesh == null && meshFilter != null)
             {
                 generatedMesh = new Mesh();

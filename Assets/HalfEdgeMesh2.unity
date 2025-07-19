@@ -226,13 +226,13 @@ MonoBehaviour:
     y: 1
     z: 1
   boxSegments:
-    x: 2
-    y: 2
-    z: 2
-  sphereRadius: 1
+    x: 12
+    y: 12
+    z: 12
+  sphereRadius: 0.5
   sphereSegments:
     x: 16
-    y: 12
+    y: 16
 --- !u!1 &231048555
 GameObject:
   m_ObjectHideFlags: 0

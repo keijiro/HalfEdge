@@ -43,7 +43,7 @@ namespace HalfEdgeMesh2.Editor
 
             // Generator-specific settings
             var selectedType = (GeneratorSample.GeneratorType)generatorType.enumValueIndex;
-            
+
             switch (selectedType)
             {
                 case GeneratorSample.GeneratorType.Box:

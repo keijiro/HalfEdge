@@ -61,7 +61,7 @@ namespace HalfEdgeMesh2.Tests
             {
                 // X faces: 2*4 = 8, Y faces: 3*4 = 12, Z faces: 3*2 = 6
                 // Total: 8 + 12 + 6 = 26 quads
-                var expectedFaces = (segments.y * segments.z) * 2 + // X faces  
+                var expectedFaces = (segments.y * segments.z) * 2 + // X faces
                                   (segments.x * segments.z) * 2 + // Y faces
                                   (segments.x * segments.y) * 2;  // Z faces
                 Assert.AreEqual(expectedFaces, mesh.faceCount, "Face count should match segment configuration");
@@ -114,7 +114,7 @@ namespace HalfEdgeMesh2.Tests
 
                 Assert.AreEqual(0f, math.length(bounds1Center), 0.001f, "Cube should be centered at origin");
                 Assert.AreEqual(0f, math.length(bounds2Center), 0.001f, "Cube should be centered at origin");
-                
+
                 Assert.AreEqual(0f, math.length(size1 - bounds1Size), 0.001f, "Bounds should match specified size");
                 Assert.AreEqual(0f, math.length(size2 - bounds2Size), 0.001f, "Bounds should match specified size");
             }
