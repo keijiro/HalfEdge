@@ -9,8 +9,13 @@ namespace HalfEdgeMesh2.Samples
     public class SimpleMeshSample : MonoBehaviour
     {
         MeshFilter meshFilter;
+        MeshBuilder builder;
 
-        void Start() => meshFilter = GetComponent<MeshFilter>();
+        void Start()
+        {
+            meshFilter = GetComponent<MeshFilter>();
+            builder = new MeshBuilder();
+        }
 
         void Update() => GenerateMesh();
 
@@ -19,11 +24,10 @@ namespace HalfEdgeMesh2.Samples
             var meshData = CreatePyramid();
             try
             {
-                var unityMesh = meshData.ToUnityMesh(true);
-
-                if (meshFilter.mesh != null)
-                    DestroyImmediate(meshFilter.mesh);
-                meshFilter.mesh = unityMesh;
+                if (meshFilter.mesh == null)
+                    meshFilter.mesh = new Mesh();
+                    
+                meshData.UpdateUnityMesh(meshFilter.mesh, true);
             }
             finally
             {
@@ -33,7 +37,7 @@ namespace HalfEdgeMesh2.Samples
 
         MeshData CreatePyramid()
         {
-            var builder = new MeshBuilder();
+            builder.Clear();
 
             var animatedHeight = 1f + math.sin(Time.time * 2f) * 0.5f;
 
@@ -54,7 +58,7 @@ namespace HalfEdgeMesh2.Samples
 
         void OnDestroy()
         {
-            if (meshFilter != null && meshFilter.mesh != null)
+            if (meshFilter?.mesh != null)
                 DestroyImmediate(meshFilter.mesh);
         }
     }

@@ -10,7 +10,18 @@ namespace HalfEdgeMesh2.Unity
         public static Mesh ToUnityMesh(ref MeshData meshData, bool calculateNormals = true)
         {
             var mesh = new Mesh();
-            
+            UpdateMeshData(mesh, ref meshData, calculateNormals);
+            return mesh;
+        }
+        
+        public static void UpdateUnityMesh(Mesh mesh, ref MeshData meshData, bool calculateNormals = true)
+        {
+            mesh.Clear();
+            UpdateMeshData(mesh, ref meshData, calculateNormals);
+        }
+        
+        static void UpdateMeshData(Mesh mesh, ref MeshData meshData, bool calculateNormals)
+        {
             var vertices = ExtractVertices(ref meshData);
             var triangles = ExtractTriangles(ref meshData);
             
@@ -26,7 +37,6 @@ namespace HalfEdgeMesh2.Unity
             }
             
             mesh.RecalculateBounds();
-            return mesh;
         }
         
         static Vector3[] ExtractVertices(ref MeshData meshData)
