@@ -11,7 +11,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void CreateTriangle_CreatesValidMesh()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
 
             // Add vertices
             var v0 = builder.AddVertex(new float3(0, 0, 0));
@@ -41,7 +41,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void CreateQuad_CreatesValidMeshWithTwins()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
 
             // Add vertices
             var v0 = builder.AddVertex(new float3(0, 0, 0));
@@ -86,7 +86,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void EmptyMesh_IsValid()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
 
             var mesh = builder.Build(Allocator.Temp);
             try
@@ -106,7 +106,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void AddFace_WithReadOnlySpan_CreatesValidFace()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
 
             var v0 = builder.AddVertex(new float3(0, 0, 0));
             var v1 = builder.AddVertex(new float3(1, 0, 0));

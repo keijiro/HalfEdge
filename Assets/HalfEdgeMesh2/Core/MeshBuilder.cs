@@ -1,20 +1,35 @@
 using System;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 
 namespace HalfEdgeMesh2
 {
-    public class MeshBuilder
+    public struct MeshBuilder : System.IDisposable
     {
-        List<Vertex> vertices = new List<Vertex>();
-        List<HalfEdge> halfEdges = new List<HalfEdge>();
-        List<Face> faces = new List<Face>();
-        Dictionary<(int, int), int> edgeMap = new Dictionary<(int, int), int>();
+        NativeList<Vertex> vertices;
+        NativeList<HalfEdge> halfEdges;
+        NativeList<Face> faces;
+        NativeHashMap<long, int> edgeMap;
+
+        public MeshBuilder(Allocator allocator)
+        {
+            vertices = new NativeList<Vertex>(allocator);
+            halfEdges = new NativeList<HalfEdge>(allocator);
+            faces = new NativeList<Face>(allocator);
+            edgeMap = new NativeHashMap<long, int>(16, allocator);
+        }
+
+        public void Dispose()
+        {
+            if (vertices.IsCreated) vertices.Dispose();
+            if (halfEdges.IsCreated) halfEdges.Dispose();
+            if (faces.IsCreated) faces.Dispose();
+            if (edgeMap.IsCreated) edgeMap.Dispose();
+        }
 
         public int AddVertex(float3 position)
         {
-            var index = vertices.Count;
+            var index = vertices.Length;
             vertices.Add(new Vertex(position));
             return index;
         }
@@ -36,15 +51,15 @@ namespace HalfEdgeMesh2
             if (vertexIndices.Length < 3)
                 throw new ArgumentException("Face must have at least 3 vertices");
 
-            var faceIndex = faces.Count;
-            var firstHalfEdge = halfEdges.Count;
+            var faceIndex = faces.Length;
+            var firstHalfEdge = halfEdges.Length;
 
             // Create half-edges for this face
             for (var i = 0; i < vertexIndices.Length; i++)
             {
                 var v0 = vertexIndices[i];
                 var v1 = vertexIndices[(i + 1) % vertexIndices.Length];
-                var heIndex = halfEdges.Count;
+                var heIndex = halfEdges.Length;
 
                 // Create half-edge
                 var he = new HalfEdge
@@ -66,7 +81,8 @@ namespace HalfEdgeMesh2
                 }
 
                 // Store edge mapping for twin connection
-                edgeMap[(v0, v1)] = heIndex;
+                var edgeKey = PackEdge(v0, v1);
+                edgeMap[edgeKey] = heIndex;
             }
 
             // Create face
@@ -75,22 +91,24 @@ namespace HalfEdgeMesh2
             return faceIndex;
         }
 
+        static long PackEdge(int v0, int v1) => ((long)v0 << 32) | (uint)v1;
+
         public MeshData Build(Allocator allocator)
         {
             // Connect twins
             ConnectTwins();
 
             // Create mesh data
-            var meshData = new MeshData(vertices.Count, halfEdges.Count, faces.Count, allocator);
+            var meshData = new MeshData(vertices.Length, halfEdges.Length, faces.Length, allocator);
 
             // Copy data
-            for (var i = 0; i < vertices.Count; i++)
+            for (var i = 0; i < vertices.Length; i++)
                 meshData.AddVertex(vertices[i]);
 
-            for (var i = 0; i < halfEdges.Count; i++)
+            for (var i = 0; i < halfEdges.Length; i++)
                 meshData.AddHalfEdge(halfEdges[i]);
 
-            for (var i = 0; i < faces.Count; i++)
+            for (var i = 0; i < faces.Length; i++)
                 meshData.AddFace(faces[i]);
 
             return meshData;
@@ -106,18 +124,31 @@ namespace HalfEdgeMesh2
 
         void ConnectTwins()
         {
-            foreach (var kvp in edgeMap)
+            var keys = edgeMap.GetKeyArray(Allocator.Temp);
+            try
             {
-                var (v0, v1) = kvp.Key;
-                var heIndex = kvp.Value;
-
-                // Look for opposite edge
-                if (edgeMap.TryGetValue((v1, v0), out var twinIndex))
+                for (var i = 0; i < keys.Length; i++)
                 {
-                    var he = halfEdges[heIndex];
-                    he.twin = twinIndex;
-                    halfEdges[heIndex] = he;
+                    var edgeKey = keys[i];
+                    var heIndex = edgeMap[edgeKey];
+
+                    // Unpack edge
+                    var v0 = (int)(edgeKey >> 32);
+                    var v1 = (int)(edgeKey & 0xFFFFFFFF);
+
+                    // Look for opposite edge
+                    var oppositeKey = PackEdge(v1, v0);
+                    if (edgeMap.TryGetValue(oppositeKey, out var twinIndex))
+                    {
+                        var he = halfEdges[heIndex];
+                        he.twin = twinIndex;
+                        halfEdges[heIndex] = he;
+                    }
                 }
+            }
+            finally
+            {
+                keys.Dispose();
             }
         }
     }

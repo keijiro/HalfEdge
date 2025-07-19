@@ -9,12 +9,10 @@ namespace HalfEdgeMesh2.Samples
     public class SimpleMeshSample : MonoBehaviour
     {
         MeshFilter meshFilter;
-        MeshBuilder builder;
 
         void Start()
         {
             meshFilter = GetComponent<MeshFilter>();
-            builder = new MeshBuilder();
         }
 
         void Update() => GenerateMesh();
@@ -37,7 +35,7 @@ namespace HalfEdgeMesh2.Samples
 
         MeshData CreatePyramid()
         {
-            builder.Clear();
+            using var builder = new MeshBuilder(Allocator.Temp);
 
             var animatedHeight = 1f + math.sin(Time.time * 2f) * 0.5f;
 

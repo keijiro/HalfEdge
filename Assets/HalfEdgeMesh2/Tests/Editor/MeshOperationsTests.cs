@@ -10,7 +10,7 @@ namespace HalfEdgeMesh2.Tests
     {
         private MeshData CreateTriangleMesh()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
             builder.AddVertex(new float3(0, 0, 0));
             builder.AddVertex(new float3(1, 0, 0));
             builder.AddVertex(new float3(0, 0, 1));
@@ -20,7 +20,7 @@ namespace HalfEdgeMesh2.Tests
 
         private MeshData CreateTetrahedronMesh()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
 
             // Add vertices
             builder.AddVertex(new float3(0, 0, 0));

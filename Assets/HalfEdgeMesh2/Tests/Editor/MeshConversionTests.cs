@@ -12,7 +12,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void ToUnityMesh_Triangle_CreatesValidUnityMesh()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
             builder.AddVertex(new float3(0, 0, 0));
             builder.AddVertex(new float3(1, 0, 0));
             builder.AddVertex(new float3(0, 0, 1));
@@ -50,7 +50,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void ToUnityMesh_Quad_CreatesCorrectTriangulation()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
             builder.AddVertex(new float3(0, 0, 0));
             builder.AddVertex(new float3(1, 0, 0));
             builder.AddVertex(new float3(1, 1, 0));
@@ -84,7 +84,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void ToUnityMesh_WithoutNormals_SkipsNormalCalculation()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
             builder.AddVertex(new float3(0, 0, 0));
             builder.AddVertex(new float3(1, 0, 0));
             builder.AddVertex(new float3(0, 0, 1));
@@ -109,7 +109,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void ToUnityMesh_Box_CreatesCorrectMesh()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
 
             var size = new float3(1, 1, 1);
             var halfSize = size * 0.5f;
@@ -153,7 +153,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void UpdateUnityMesh_Triangle_UpdatesExistingMesh()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
             builder.AddVertex(new float3(0, 0, 0));
             builder.AddVertex(new float3(1, 0, 0));
             builder.AddVertex(new float3(0, 0, 1));
@@ -197,7 +197,7 @@ namespace HalfEdgeMesh2.Tests
 
             for (var i = 0; i < 3; i++)
             {
-                var builder = new MeshBuilder();
+                using var builder = new MeshBuilder(Allocator.Temp);
                 builder.AddVertex(new float3(0, 0, 0));
                 builder.AddVertex(new float3(1, 0, 0));
                 builder.AddVertex(new float3(0, 0, 1 + i)); // Different Z position each iteration
@@ -227,7 +227,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void UpdateUnityMesh_OptimizedVersion_UpdatesExistingMesh()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
             builder.AddVertex(new float3(0, 0, 0));
             builder.AddVertex(new float3(1, 0, 0));
             builder.AddVertex(new float3(0, 0, 1));

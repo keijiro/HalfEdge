@@ -11,7 +11,7 @@ namespace HalfEdgeMesh2.Tests
         [Test]
         public void Example_CreateSimpleBox()
         {
-            var builder = new MeshBuilder();
+            using var builder = new MeshBuilder(Allocator.Temp);
 
             // Define box vertices
             var size = new float3(1, 1, 1);
