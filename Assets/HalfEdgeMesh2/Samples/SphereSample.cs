@@ -1,13 +1,18 @@
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using HalfEdgeMesh2.Generators;
 using HalfEdgeMesh2.Unity;
 
 namespace HalfEdgeMesh2.Samples
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-    public class SimpleMeshSample : MonoBehaviour
+    public class SphereSample : MonoBehaviour
     {
+        [SerializeField] float radius = 1.0f;
+        [SerializeField] int2 segments = new int2(16, 12);
+        [SerializeField] bool animateSegments = true;
+
         MeshFilter meshFilter;
 
         void Start()
@@ -19,7 +24,18 @@ namespace HalfEdgeMesh2.Samples
 
         void GenerateMesh()
         {
-            var meshData = CreatePyramid();
+            var currentSegments = segments;
+            
+            if (animateSegments)
+            {
+                var t = Time.time;
+                var lonVariation = (int)(4 * math.sin(t * 0.5f));
+                var latVariation = (int)(3 * math.cos(t * 0.7f));
+                currentSegments += new int2(lonVariation, latVariation);
+                currentSegments = math.max(currentSegments, 3);
+            }
+
+            var meshData = Sphere.Generate(radius, currentSegments, Allocator.Persistent);
             try
             {
                 if (meshFilter.mesh == null)
@@ -31,27 +47,6 @@ namespace HalfEdgeMesh2.Samples
             {
                 meshData.Dispose();
             }
-        }
-
-        MeshData CreatePyramid()
-        {
-            using var builder = new MeshBuilder(Allocator.Temp);
-
-            var animatedHeight = 1f + math.sin(Time.time * 2f) * 0.5f;
-
-            builder.AddVertex(new float3(-0.5f, 0, -0.5f));
-            builder.AddVertex(new float3( 0.5f, 0, -0.5f));
-            builder.AddVertex(new float3( 0.5f, 0,  0.5f));
-            builder.AddVertex(new float3(-0.5f, 0,  0.5f));
-            builder.AddVertex(new float3(0, animatedHeight, 0));
-
-            builder.AddFace(0, 1, 2, 3);
-            builder.AddFace(0, 4, 1);
-            builder.AddFace(1, 4, 2);
-            builder.AddFace(2, 4, 3);
-            builder.AddFace(3, 4, 0);
-
-            return builder.Build(Allocator.Persistent);
         }
 
         void OnDestroy()

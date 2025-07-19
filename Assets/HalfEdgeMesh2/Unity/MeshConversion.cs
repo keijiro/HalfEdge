@@ -10,22 +10,21 @@ namespace HalfEdgeMesh2.Unity
         // Static buffers for memory reuse
         static NativeArray<Vector3> s_vertexBuffer;
         static NativeArray<int> s_triangleBuffer;
-        static NativeArray<Vector3> s_normalBuffer;
         static bool s_buffersInitialized;
-        public static Mesh ToUnityMesh(ref MeshData meshData, bool calculateNormals = true)
+        public static Mesh ToUnityMesh(ref MeshData meshData)
         {
             var mesh = new Mesh();
-            UpdateMeshDataOptimized(mesh, ref meshData, calculateNormals);
+            UpdateMeshDataOptimized(mesh, ref meshData);
             return mesh;
         }
 
-        public static void UpdateUnityMesh(Mesh mesh, ref MeshData meshData, bool calculateNormals = true)
+        public static void UpdateUnityMesh(Mesh mesh, ref MeshData meshData)
         {
             mesh.Clear();
-            UpdateMeshDataOptimized(mesh, ref meshData, calculateNormals);
+            UpdateMeshDataOptimized(mesh, ref meshData);
         }
 
-        static void UpdateMeshDataOptimized(Mesh mesh, ref MeshData meshData, bool calculateNormals)
+        static void UpdateMeshDataOptimized(Mesh mesh, ref MeshData meshData)
         {
             EnsureBufferCapacity(meshData.vertexCount, GetTriangleCount(ref meshData));
 
@@ -40,19 +39,7 @@ namespace HalfEdgeMesh2.Unity
 
             mesh.SetVertices(vertexSlice);
             mesh.SetIndices(triangleSlice, MeshTopology.Triangles, 0);
-
-            if (calculateNormals)
-            {
-                if (HasValidNormals(ref meshData))
-                {
-                    CalculateNormalsOptimized(ref meshData, ref s_normalBuffer);
-                    var normalSlice = s_normalBuffer.GetSubArray(0, meshData.vertexCount);
-                    mesh.SetNormals(normalSlice);
-                }
-                else
-                    mesh.RecalculateNormals();
-            }
-
+            mesh.RecalculateNormals();
             mesh.RecalculateBounds();
         }
 
@@ -68,12 +55,6 @@ namespace HalfEdgeMesh2.Unity
             {
                 if (s_buffersInitialized) s_triangleBuffer.Dispose();
                 s_triangleBuffer = new NativeArray<int>(math.max(triangleCount, 192), Allocator.Persistent);
-            }
-
-            if (!s_buffersInitialized || s_normalBuffer.Length < vertexCount)
-            {
-                if (s_buffersInitialized) s_normalBuffer.Dispose();
-                s_normalBuffer = new NativeArray<Vector3>(math.max(vertexCount, 64), Allocator.Persistent);
             }
 
             s_buffersInitialized = true;
@@ -140,29 +121,6 @@ namespace HalfEdgeMesh2.Unity
             } while (currentHe != startHalfEdge);
         }
 
-        static void CalculateNormalsOptimized(ref MeshData meshData, ref NativeArray<Vector3> buffer)
-        {
-            var normals = new NativeArray<float3>(meshData.vertexCount, Allocator.Temp);
-            MeshOperations.ComputeVertexNormals(ref meshData, ref normals);
-
-            for (var i = 0; i < meshData.vertexCount; i++)
-                buffer[i] = normals[i];
-
-            normals.Dispose();
-        }
-
-        static bool HasValidNormals(ref MeshData meshData)
-        {
-            // Use optimized version that doesn't create intermediate lists
-            for (var i = 0; i < meshData.faceCount; i++)
-            {
-                var face = meshData.faces[i];
-                var vertexCount = CountFaceVertices(ref meshData, face.halfEdge);
-                if (vertexCount < 3)
-                    return false;
-            }
-            return meshData.faceCount > 0;
-        }
 
         [BurstCompile]
         static int CountFaceVertices(ref MeshData meshData, int startHalfEdge)

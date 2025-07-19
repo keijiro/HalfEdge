@@ -81,30 +81,6 @@ namespace HalfEdgeMesh2.Tests
             }
         }
 
-        [Test]
-        public void ToUnityMesh_WithoutNormals_SkipsNormalCalculation()
-        {
-            using var builder = new MeshBuilder(Allocator.Temp);
-            builder.AddVertex(new float3(0, 0, 0));
-            builder.AddVertex(new float3(1, 0, 0));
-            builder.AddVertex(new float3(0, 0, 1));
-            builder.AddFace(0, 2, 1);
-
-            var meshData = builder.Build(Allocator.Temp);
-            try
-            {
-                var unityMesh = meshData.ToUnityMesh(calculateNormals: false);
-
-                Assert.AreEqual(3, unityMesh.vertexCount);
-                Assert.That(unityMesh.normals == null || unityMesh.normals.Length == 0, "Normals should be null or empty when not calculated");
-
-                Object.DestroyImmediate(unityMesh);
-            }
-            finally
-            {
-                meshData.Dispose();
-            }
-        }
 
         [Test]
         public void ToUnityMesh_Box_CreatesCorrectMesh()
