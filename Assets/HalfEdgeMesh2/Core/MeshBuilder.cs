@@ -1,4 +1,5 @@
 using System;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
 
@@ -91,6 +92,7 @@ namespace HalfEdgeMesh2
             return faceIndex;
         }
 
+        [BurstCompile]
         static long PackEdge(int v0, int v1) => ((long)v0 << 32) | (uint)v1;
 
         public MeshData Build(Allocator allocator)

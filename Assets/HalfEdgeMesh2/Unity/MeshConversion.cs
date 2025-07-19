@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -79,6 +79,7 @@ namespace HalfEdgeMesh2.Unity
             s_buffersInitialized = true;
         }
 
+        [BurstCompile]
         static int GetTriangleCount(ref MeshData meshData)
         {
             var triangleCount = 0;
@@ -91,12 +92,14 @@ namespace HalfEdgeMesh2.Unity
             return triangleCount;
         }
 
+        [BurstCompile]
         static void ExtractVerticesOptimized(ref MeshData meshData, ref NativeArray<Vector3> buffer)
         {
             for (var i = 0; i < meshData.vertexCount; i++)
                 buffer[i] = meshData.vertices[i].position;
         }
 
+        [BurstCompile]
         static void ExtractTrianglesOptimized(ref MeshData meshData, ref NativeArray<int> buffer)
         {
             var triangleIndex = 0;
@@ -107,6 +110,7 @@ namespace HalfEdgeMesh2.Unity
             }
         }
 
+        [BurstCompile]
         static void ExtractFaceTrianglesDirectOptimized(ref MeshData meshData, int startHalfEdge, ref NativeArray<int> triangles, ref int triangleIndex)
         {
             // Directly triangulate without intermediate storage for better performance
@@ -160,6 +164,7 @@ namespace HalfEdgeMesh2.Unity
             return meshData.faceCount > 0;
         }
 
+        [BurstCompile]
         static int CountFaceVertices(ref MeshData meshData, int startHalfEdge)
         {
             var count = 0;
