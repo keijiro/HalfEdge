@@ -222,5 +222,47 @@ namespace HalfEdgeMesh2.Tests
             
             Object.DestroyImmediate(unityMesh);
         }
+        
+        
+        [Test]
+        public void UpdateUnityMesh_OptimizedVersion_UpdatesExistingMesh()
+        {
+            var builder = new MeshBuilder();
+            builder.AddVertex(new float3(0, 0, 0));
+            builder.AddVertex(new float3(1, 0, 0));
+            builder.AddVertex(new float3(0, 0, 1));
+            builder.AddFace(0, 2, 1);
+            
+            var meshData = builder.Build(Allocator.Temp);
+            var unityMesh = new Mesh();
+            
+            try
+            {
+                meshData.UpdateUnityMesh(unityMesh);
+                
+                Assert.AreEqual(3, unityMesh.vertexCount);
+                Assert.AreEqual(3, unityMesh.triangles.Length);
+                
+                var vertices = unityMesh.vertices;
+                Assert.AreEqual(new Vector3(0, 0, 0), vertices[0]);
+                Assert.AreEqual(new Vector3(1, 0, 0), vertices[1]);
+                Assert.AreEqual(new Vector3(0, 0, 1), vertices[2]);
+                
+                var triangles = unityMesh.triangles;
+                Assert.AreEqual(0, triangles[0]);
+                Assert.AreEqual(2, triangles[1]);
+                Assert.AreEqual(1, triangles[2]);
+                
+                Assert.IsNotNull(unityMesh.normals);
+                Assert.AreEqual(3, unityMesh.normals.Length);
+                
+                Object.DestroyImmediate(unityMesh);
+            }
+            finally
+            {
+                meshData.Dispose();
+            }
+        }
+        
     }
 }
