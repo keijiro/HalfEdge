@@ -31,6 +31,7 @@ Check out Design.md for the project design and goal definitions.
 - Omit braces for single-statement blocks (`if`, `for`, `while`, etc.).
 - Use expression-bodied members whenever appropriate (for properties, methods,
   lambdas, etc.).
+- Do not leave trailing whitespace or tabs at the end of lines.
 
 # Workflow Instructions
 
