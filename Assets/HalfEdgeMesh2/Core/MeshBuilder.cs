@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -18,10 +19,22 @@ namespace HalfEdgeMesh2
             return index;
         }
 
-        public int AddFace(params int[] vertexIndices)
+        public int AddFace(int v0, int v1, int v2)
+        {
+            Span<int> vertices = stackalloc int[3] { v0, v1, v2 };
+            return AddFace(vertices);
+        }
+
+        public int AddFace(int v0, int v1, int v2, int v3)
+        {
+            Span<int> vertices = stackalloc int[4] { v0, v1, v2, v3 };
+            return AddFace(vertices);
+        }
+
+        public int AddFace(ReadOnlySpan<int> vertexIndices)
         {
             if (vertexIndices.Length < 3)
-                throw new System.ArgumentException("Face must have at least 3 vertices");
+                throw new ArgumentException("Face must have at least 3 vertices");
 
             var faceIndex = faces.Count;
             var firstHalfEdge = halfEdges.Count;
