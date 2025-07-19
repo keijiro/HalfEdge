@@ -17,26 +17,26 @@ namespace HalfEdgeMesh2.Tests
             builder.AddFace(0, 2, 1);  // CCW order for upward normal
             return builder.Build(Allocator.Temp);
         }
-        
+
         private MeshData CreateTetrahedronMesh()
         {
             var builder = new MeshBuilder();
-            
+
             // Add vertices
             builder.AddVertex(new float3(0, 0, 0));
             builder.AddVertex(new float3(1, 0, 0));
             builder.AddVertex(new float3(0.5f, 0, math.sqrt(0.75f)));
             builder.AddVertex(new float3(0.5f, math.sqrt(2f/3f), math.sqrt(0.75f) / 3f));
-            
+
             // Add faces
             builder.AddFace(0, 1, 2);  // Bottom
             builder.AddFace(0, 3, 1);  // Front
             builder.AddFace(1, 3, 2);  // Right
             builder.AddFace(2, 3, 0);  // Left
-            
+
             return builder.Build(Allocator.Temp);
         }
-        
+
         [Test]
         public void ComputeFaceNormals_Triangle_ReturnsCorrectNormal()
         {
@@ -45,11 +45,11 @@ namespace HalfEdgeMesh2.Tests
             try
             {
                 MeshOperations.ComputeFaceNormals(ref mesh, ref normals);
-                
+
                 // Normal should point in Y direction
                 var expectedNormal = new float3(0, 1, 0);
                 var actualNormal = normals[0];
-                
+
                 Assert.AreEqual(expectedNormal.x, actualNormal.x, 0.001f);
                 Assert.AreEqual(expectedNormal.y, actualNormal.y, 0.001f);
                 Assert.AreEqual(expectedNormal.z, actualNormal.z, 0.001f);
@@ -60,7 +60,7 @@ namespace HalfEdgeMesh2.Tests
                 normals.Dispose();
             }
         }
-        
+
         [Test]
         public void ComputeVertexNormals_Tetrahedron_ReturnsNormalizedNormals()
         {
@@ -69,7 +69,7 @@ namespace HalfEdgeMesh2.Tests
             try
             {
                 MeshOperations.ComputeVertexNormals(ref mesh, ref normals);
-                
+
                 // All normals should be normalized
                 for (int i = 0; i < mesh.vertexCount; i++)
                 {
@@ -83,7 +83,7 @@ namespace HalfEdgeMesh2.Tests
                 normals.Dispose();
             }
         }
-        
+
         [Test]
         public void ComputeBounds_Triangle_ReturnsCorrectBounds()
         {
@@ -91,7 +91,7 @@ namespace HalfEdgeMesh2.Tests
             try
             {
                 MeshOperations.ComputeBounds(ref mesh, out var boundsCenter, out var boundsSize);
-                
+
                 Assert.AreEqual(new Vector3(0.5f, 0, 0.5f), (Vector3)boundsCenter);
                 Assert.AreEqual(new Vector3(1, 0, 1), (Vector3)boundsSize);
             }
@@ -100,7 +100,7 @@ namespace HalfEdgeMesh2.Tests
                 mesh.Dispose();
             }
         }
-        
+
         [Test]
         public void CountEdges_Tetrahedron_Returns6Edges()
         {
@@ -115,7 +115,7 @@ namespace HalfEdgeMesh2.Tests
                 mesh.Dispose();
             }
         }
-        
+
         [Test]
         public void GetVertexValence_Tetrahedron_Returns3ForEachVertex()
         {
@@ -134,7 +134,7 @@ namespace HalfEdgeMesh2.Tests
                 mesh.Dispose();
             }
         }
-        
+
         [Test]
         public void ValidateMesh_ValidMesh_ReturnsTrue()
         {
@@ -148,7 +148,7 @@ namespace HalfEdgeMesh2.Tests
                 mesh.Dispose();
             }
         }
-        
+
         [Test]
         public void ValidateMesh_InvalidReferences_ReturnsFalse()
         {
@@ -159,7 +159,7 @@ namespace HalfEdgeMesh2.Tests
                 var he = mesh.halfEdges[0];
                 he.next = 999; // Invalid index
                 mesh.halfEdges[0] = he;
-                
+
                 Assert.IsFalse(MeshOperations.ValidateMesh(ref mesh));
             }
             finally

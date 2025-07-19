@@ -26,7 +26,7 @@ namespace HalfEdgeMesh2.Samples
             {
                 if (meshFilter.mesh == null)
                     meshFilter.mesh = new Mesh();
-                    
+
                 meshData.UpdateUnityMesh(meshFilter.mesh, true);
             }
             finally
