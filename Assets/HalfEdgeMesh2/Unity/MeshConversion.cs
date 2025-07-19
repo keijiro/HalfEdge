@@ -5,23 +5,35 @@ using UnityEngine;
 
 namespace HalfEdgeMesh2.Unity
 {
+    public enum NormalGenerationMode
+    {
+        Smooth,
+        Flat
+    }
+
     public static class MeshConversion
     {
         // Static buffers for memory reuse
         static NativeArray<Vector3> s_vertexBuffer;
         static NativeArray<int> s_triangleBuffer;
         static bool s_buffersInitialized;
-        public static Mesh ToUnityMesh(ref MeshData meshData)
+        public static Mesh ToUnityMesh(ref MeshData meshData, NormalGenerationMode mode = NormalGenerationMode.Smooth)
         {
             var mesh = new Mesh();
-            UpdateMeshDataOptimized(mesh, ref meshData);
+            if (mode == NormalGenerationMode.Smooth)
+                UpdateMeshDataOptimized(mesh, ref meshData);
+            else
+                UpdateMeshDataFlat(mesh, ref meshData);
             return mesh;
         }
 
-        public static void UpdateUnityMesh(Mesh mesh, ref MeshData meshData)
+        public static void UpdateUnityMesh(Mesh mesh, ref MeshData meshData, NormalGenerationMode mode = NormalGenerationMode.Smooth)
         {
             mesh.Clear();
-            UpdateMeshDataOptimized(mesh, ref meshData);
+            if (mode == NormalGenerationMode.Smooth)
+                UpdateMeshDataOptimized(mesh, ref meshData);
+            else
+                UpdateMeshDataFlat(mesh, ref meshData);
         }
 
         static void UpdateMeshDataOptimized(Mesh mesh, ref MeshData meshData)
@@ -136,6 +148,72 @@ namespace HalfEdgeMesh2.Unity
             } while (currentHe != startHalfEdge);
 
             return count;
+        }
+
+        static void UpdateMeshDataFlat(Mesh mesh, ref MeshData meshData)
+        {
+            var triangleCount = GetTriangleCount(ref meshData);
+            var vertexCount = triangleCount; // For flat shading, each triangle vertex is unique
+
+            EnsureBufferCapacity(vertexCount, triangleCount);
+
+            // Extract vertices and normals for flat shading
+            ExtractVerticesFlat(ref meshData, ref s_vertexBuffer, out var actualVertexCount);
+            ExtractTrianglesFlat(triangleCount, ref s_triangleBuffer);
+
+            // Set mesh data using buffer slices
+            var vertexSlice = s_vertexBuffer.GetSubArray(0, actualVertexCount);
+            var triangleSlice = s_triangleBuffer.GetSubArray(0, triangleCount);
+
+            mesh.SetVertices(vertexSlice);
+            mesh.SetIndices(triangleSlice, MeshTopology.Triangles, 0);
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+        }
+
+        static void ExtractVerticesFlat(ref MeshData meshData, ref NativeArray<Vector3> buffer, out int actualVertexCount)
+        {
+            var vertexIndex = 0;
+
+            for (var faceIndex = 0; faceIndex < meshData.faceCount; faceIndex++)
+            {
+                var face = meshData.faces[faceIndex];
+                ExtractFaceVerticesFlat(ref meshData, face.halfEdge, ref buffer, ref vertexIndex);
+            }
+
+            actualVertexCount = vertexIndex;
+        }
+
+        static void ExtractFaceVerticesFlat(ref MeshData meshData, int startHalfEdge, ref NativeArray<Vector3> vertices, ref int vertexIndex)
+        {
+            // Collect face vertices
+            var faceVertexCount = CountFaceVertices(ref meshData, startHalfEdge);
+            var faceVertices = new NativeArray<Vector3>(faceVertexCount, Allocator.Temp);
+
+            var currentHe = startHalfEdge;
+            for (var i = 0; i < faceVertexCount; i++)
+            {
+                var he = meshData.halfEdges[currentHe];
+                faceVertices[i] = meshData.vertices[he.vertex].position;
+                currentHe = he.next;
+            }
+
+            // Triangulate face with duplicated vertices for flat shading
+            for (var i = 1; i < faceVertexCount - 1; i++)
+            {
+                vertices[vertexIndex++] = faceVertices[0];
+                vertices[vertexIndex++] = faceVertices[i];
+                vertices[vertexIndex++] = faceVertices[i + 1];
+            }
+
+            faceVertices.Dispose();
+        }
+
+        [BurstCompile]
+        static void ExtractTrianglesFlat(int triangleCount, ref NativeArray<int> buffer)
+        {
+            for (var i = 0; i < triangleCount; i++)
+                buffer[i] = i;
         }
     }
 }

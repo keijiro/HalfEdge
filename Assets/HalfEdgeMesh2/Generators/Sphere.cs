@@ -47,7 +47,7 @@ namespace HalfEdgeMesh2.Generators
 
                     if (lat == 0)
                     {
-                        // Top cap - triangles 
+                        // Top cap - triangles
                         builder.AddFace(i0, i2, i1);
                     }
                     else if (lat == latitudeSegments - 1)

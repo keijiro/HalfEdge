@@ -25,7 +25,7 @@ namespace HalfEdgeMesh2.Samples
         void GenerateMesh()
         {
             var currentSegments = segments;
-            
+
             if (animateSegments)
             {
                 var t = Time.time;

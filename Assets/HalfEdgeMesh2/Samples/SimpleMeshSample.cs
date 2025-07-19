@@ -8,6 +8,8 @@ namespace HalfEdgeMesh2.Samples
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
     public class SimpleMeshSample : MonoBehaviour
     {
+        [SerializeField] NormalGenerationMode normalMode = NormalGenerationMode.Smooth;
+
         MeshFilter meshFilter;
 
         void Start()
@@ -25,7 +27,7 @@ namespace HalfEdgeMesh2.Samples
                 if (meshFilter.mesh == null)
                     meshFilter.mesh = new Mesh();
 
-                meshData.UpdateUnityMesh(meshFilter.mesh);
+                meshData.UpdateUnityMesh(meshFilter.mesh, normalMode);
             }
             finally
             {
