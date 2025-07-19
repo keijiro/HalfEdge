@@ -21,7 +21,7 @@ namespace HalfEdgeMesh2.Unity
         {
             var mesh = new Mesh();
             if (mode == NormalGenerationMode.Smooth)
-                UpdateMeshDataOptimized(mesh, ref meshData);
+                UpdateMeshDataSmooth(mesh, ref meshData);
             else
                 UpdateMeshDataFlat(mesh, ref meshData);
             return mesh;
@@ -31,22 +31,22 @@ namespace HalfEdgeMesh2.Unity
         {
             mesh.Clear();
             if (mode == NormalGenerationMode.Smooth)
-                UpdateMeshDataOptimized(mesh, ref meshData);
+                UpdateMeshDataSmooth(mesh, ref meshData);
             else
                 UpdateMeshDataFlat(mesh, ref meshData);
         }
 
-        static void UpdateMeshDataOptimized(Mesh mesh, ref MeshData meshData)
+        static void UpdateMeshDataSmooth(Mesh mesh, ref MeshData meshData)
         {
-            EnsureBufferCapacity(meshData.vertexCount, GetTriangleCount(ref meshData));
+            var triangleCount = GetTriangleCount(ref meshData);
+            EnsureBufferCapacity(meshData.vertexCount, triangleCount);
 
             // Extract vertices into static buffer
-            ExtractVerticesOptimized(ref meshData, ref s_vertexBuffer);
-            ExtractTrianglesOptimized(ref meshData, ref s_triangleBuffer);
+            ExtractVerticesSmooth(ref meshData, ref s_vertexBuffer);
+            ExtractTrianglesSmooth(ref meshData, ref s_triangleBuffer);
 
             // Set mesh data using buffer slices
             var vertexSlice = s_vertexBuffer.GetSubArray(0, meshData.vertexCount);
-            var triangleCount = GetTriangleCount(ref meshData);
             var triangleSlice = s_triangleBuffer.GetSubArray(0, triangleCount);
 
             mesh.SetVertices(vertexSlice);
@@ -86,25 +86,25 @@ namespace HalfEdgeMesh2.Unity
         }
 
         [BurstCompile]
-        static void ExtractVerticesOptimized(ref MeshData meshData, ref NativeArray<Vector3> buffer)
+        static void ExtractVerticesSmooth(ref MeshData meshData, ref NativeArray<Vector3> buffer)
         {
             for (var i = 0; i < meshData.vertexCount; i++)
                 buffer[i] = meshData.vertices[i].position;
         }
 
         [BurstCompile]
-        static void ExtractTrianglesOptimized(ref MeshData meshData, ref NativeArray<int> buffer)
+        static void ExtractTrianglesSmooth(ref MeshData meshData, ref NativeArray<int> buffer)
         {
             var triangleIndex = 0;
             for (var faceIndex = 0; faceIndex < meshData.faceCount; faceIndex++)
             {
                 var face = meshData.faces[faceIndex];
-                ExtractFaceTrianglesDirectOptimized(ref meshData, face.halfEdge, ref buffer, ref triangleIndex);
+                ExtractFaceTrianglesDirectSmooth(ref meshData, face.halfEdge, ref buffer, ref triangleIndex);
             }
         }
 
         [BurstCompile]
-        static void ExtractFaceTrianglesDirectOptimized(ref MeshData meshData, int startHalfEdge, ref NativeArray<int> triangles, ref int triangleIndex)
+        static void ExtractFaceTrianglesDirectSmooth(ref MeshData meshData, int startHalfEdge, ref NativeArray<int> triangles, ref int triangleIndex)
         {
             // Directly triangulate without intermediate storage for better performance
             var firstVertex = -1;
@@ -171,6 +171,7 @@ namespace HalfEdgeMesh2.Unity
             mesh.RecalculateBounds();
         }
 
+        [BurstCompile]
         static void ExtractVerticesFlat(ref MeshData meshData, ref NativeArray<Vector3> buffer, out int actualVertexCount)
         {
             var vertexIndex = 0;
@@ -184,6 +185,7 @@ namespace HalfEdgeMesh2.Unity
             actualVertexCount = vertexIndex;
         }
 
+        [BurstCompile]
         static void ExtractFaceVerticesFlat(ref MeshData meshData, int startHalfEdge, ref NativeArray<Vector3> vertices, ref int vertexIndex)
         {
             // Collect face vertices
