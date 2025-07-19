@@ -7,12 +7,13 @@ using HalfEdgeMesh2.Unity;
 namespace HalfEdgeMesh2.Samples
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
-    public class SphereSample : MonoBehaviour
+    public class BoxSample : MonoBehaviour
     {
-        [SerializeField] float radius = 1.0f;
-        [SerializeField] int2 segments = new int2(16, 12);
+        [SerializeField] float3 size = new float3(2, 2, 2);
+        [SerializeField] int3 segments = new int3(2, 2, 2);
         [SerializeField] NormalGenerationMode normalMode = NormalGenerationMode.Smooth;
         [SerializeField] bool animateSegments = true;
+        [SerializeField] bool animateSize = false;
 
         MeshFilter meshFilter;
 
@@ -25,18 +26,34 @@ namespace HalfEdgeMesh2.Samples
 
         void GenerateMesh()
         {
+            var currentSize = size;
             var currentSegments = segments;
+            
+            if (animateSize)
+            {
+                var t = Time.time;
+                var sizeVariation = new float3(
+                    0.5f * math.sin(t * 0.7f),
+                    0.3f * math.cos(t * 0.9f), 
+                    0.4f * math.sin(t * 1.1f)
+                );
+                currentSize += sizeVariation;
+                currentSize = math.max(currentSize, 0.1f);
+            }
 
             if (animateSegments)
             {
                 var t = Time.time;
-                var lonVariation = (int)(4 * math.sin(t * 0.5f));
-                var latVariation = (int)(3 * math.cos(t * 0.7f));
-                currentSegments += new int2(lonVariation, latVariation);
-                currentSegments = math.max(currentSegments, 3);
+                var segmentVariation = new int3(
+                    (int)(2 * math.sin(t * 0.5f)),
+                    (int)(2 * math.cos(t * 0.6f)),
+                    (int)(2 * math.sin(t * 0.8f))
+                );
+                currentSegments += segmentVariation;
+                currentSegments = math.max(currentSegments, 1);
             }
 
-            var meshData = Sphere.Generate(radius, currentSegments, Allocator.Persistent);
+            var meshData = Box.Generate(currentSize, currentSegments, Allocator.Persistent);
             try
             {
                 if (meshFilter.mesh == null)
