@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -11,7 +12,7 @@ namespace HalfEdgeMesh2
     {
         [NativeDisableUnsafePtrRestriction] long* keys;
         [NativeDisableUnsafePtrRestriction] int* values;
-        [NativeDisableUnsafePtrRestriction] byte* states; // 0=empty, 1=occupied
+        [NativeDisableUnsafePtrRestriction] int* states; // 0=empty, 1=occupied
 
         int capacity;
         Allocator allocator;
@@ -24,13 +25,13 @@ namespace HalfEdgeMesh2
 
             var keysSize = capacity * sizeof(long);
             var valuesSize = capacity * sizeof(int);
-            var statesSize = capacity;
+            var statesSize = capacity * sizeof(int);
 
             keys = (long*)UnsafeUtility.Malloc(keysSize, 8, allocator);
             values = (int*)UnsafeUtility.Malloc(valuesSize, 4, allocator);
-            states = (byte*)UnsafeUtility.Malloc(statesSize, 1, allocator);
+            states = (int*)UnsafeUtility.Malloc(statesSize, 4, allocator);
 
-            UnsafeUtility.MemClear(states, capacity);
+            UnsafeUtility.MemClear(states, statesSize);
         }
 
         public void Dispose()
@@ -123,7 +124,37 @@ namespace HalfEdgeMesh2
             return result;
         }
 
-        public void Clear() => UnsafeUtility.MemClear(states, capacity);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryAdd(long key, int value)
+        {
+            var index = (int)(Hash(key) & (capacity - 1));
+            var startIndex = index;
+
+            while (true)
+            {
+                // Check if slot is empty (non-atomic version for testing)
+                if (states[index] == 0)
+                {
+                    // Set state first
+                    states[index] = 1;
+                    // Then set key and value
+                    keys[index] = key;
+                    values[index] = value;
+                    return true;
+                }
+
+                // Slot is occupied, check if it's the same key
+                if (keys[index] == key)
+                    return false; // Key already exists
+
+                // Move to next slot
+                index = (index + 1) & (capacity - 1);
+                if (index == startIndex)
+                    return false; // Table is full
+            }
+        }
+
+        public void Clear() => UnsafeUtility.MemClear(states, capacity * sizeof(int));
 
         public EdgeHashMapReadOnly AsReadOnly()
         {
@@ -142,7 +173,7 @@ namespace HalfEdgeMesh2
     {
         [NativeDisableUnsafePtrRestriction] [ReadOnly] public long* keys;
         [NativeDisableUnsafePtrRestriction] [ReadOnly] public int* values;
-        [NativeDisableUnsafePtrRestriction] [ReadOnly] public byte* states;
+        [NativeDisableUnsafePtrRestriction] [ReadOnly] public int* states;
         public int capacity;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

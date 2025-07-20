@@ -8,6 +8,11 @@ using Unity.Mathematics;
 
 namespace HalfEdgeMesh2
 {
+    struct EdgeEntry
+    {
+        public long key;
+        public int halfEdgeIndex;
+    }
     [BurstCompile]
     public struct MeshBuilder : System.IDisposable
     {
@@ -15,16 +20,16 @@ namespace HalfEdgeMesh2
         NativeList<HalfEdge> halfEdges;
         NativeList<Face> faces;
         EdgeHashMap edgeMap;
+        NativeList<EdgeEntry> edgeBuffer;
 
         public MeshBuilder(Allocator allocator, int initialCapacity = 16)
         {
             vertices = new NativeList<Vertex>(initialCapacity, allocator);
             halfEdges = new NativeList<HalfEdge>(initialCapacity * 4, allocator); // 4 half-edges per vertex for quad-dominant meshes
             faces = new NativeList<Face>(initialCapacity, allocator); // 1 face per vertex for quad meshes
-            var capacity = initialCapacity * 8; // Increased safety margin to prevent infinite loops
-            // Ensure power of 2 for fast modulo
-            capacity = capacity <= 16 ? 16 : (capacity - 1) | ((capacity - 1) >> 1) | ((capacity - 1) >> 2) | ((capacity - 1) >> 4) | ((capacity - 1) >> 8) | ((capacity - 1) >> 16); capacity++;
+            var capacity = initialCapacity * 8; // Estimated edge count
             edgeMap = new EdgeHashMap(capacity, allocator);
+            edgeBuffer = new NativeList<EdgeEntry>(capacity, allocator);
         }
 
         public void Dispose()
@@ -33,6 +38,7 @@ namespace HalfEdgeMesh2
             if (halfEdges.IsCreated) halfEdges.Dispose();
             if (faces.IsCreated) faces.Dispose();
             if (edgeMap.IsCreated) edgeMap.Dispose();
+            if (edgeBuffer.IsCreated) edgeBuffer.Dispose();
         }
 
         public int AddVertex(float3 position)
@@ -48,7 +54,7 @@ namespace HalfEdgeMesh2
             var firstHalfEdge = halfEdges.Length;
 
             AddFaceTriangleBurst(v0, v1, v2, faceIndex, firstHalfEdge,
-                                ref vertices, ref halfEdges, ref edgeMap);
+                                ref vertices, ref halfEdges, ref edgeBuffer);
 
             faces.Add(new Face(firstHalfEdge));
             return faceIndex;
@@ -60,7 +66,7 @@ namespace HalfEdgeMesh2
             var firstHalfEdge = halfEdges.Length;
 
             AddFaceQuadBurst(v0, v1, v2, v3, faceIndex, firstHalfEdge,
-                            ref vertices, ref halfEdges, ref edgeMap);
+                            ref vertices, ref halfEdges, ref edgeBuffer);
 
             faces.Add(new Face(firstHalfEdge));
             return faceIndex;
@@ -100,9 +106,9 @@ namespace HalfEdgeMesh2
                     vertices[v0] = vertex;
                 }
 
-                // Store edge mapping for twin connection
+                // Store edge mapping in buffer for later parallel processing
                 var edgeKey = PackEdge(v0, v1);
-                edgeMap.Add(edgeKey, heIndex);
+                edgeBuffer.Add(new EdgeEntry { key = edgeKey, halfEdgeIndex = heIndex });
             }
 
             // Create face
@@ -116,7 +122,7 @@ namespace HalfEdgeMesh2
 
         [BurstCompile]
         static void AddFaceTriangleBurst(int v0, int v1, int v2, int faceIndex, int firstHalfEdge,
-            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref EdgeHashMap edgeMap)
+            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref NativeList<EdgeEntry> edgeBuffer)
         {
             // Create half-edges for triangle
             for (var i = 0; i < 3; i++)
@@ -143,15 +149,15 @@ namespace HalfEdgeMesh2
                     vertices[currentV] = vertex;
                 }
 
-                // Store edge mapping
+                // Store edge mapping in buffer
                 var edgeKey = PackEdge(currentV, nextV);
-                edgeMap.Add(edgeKey, heIndex);
+                edgeBuffer.Add(new EdgeEntry { key = edgeKey, halfEdgeIndex = heIndex });
             }
         }
 
         [BurstCompile]
         static void AddFaceQuadBurst(int v0, int v1, int v2, int v3, int faceIndex, int firstHalfEdge,
-            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref EdgeHashMap edgeMap)
+            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref NativeList<EdgeEntry> edgeBuffer)
         {
             // Create half-edges for quad
             for (var i = 0; i < 4; i++)
@@ -178,14 +184,17 @@ namespace HalfEdgeMesh2
                     vertices[currentV] = vertex;
                 }
 
-                // Store edge mapping
+                // Store edge mapping in buffer
                 var edgeKey = PackEdge(currentV, nextV);
-                edgeMap.Add(edgeKey, heIndex);
+                edgeBuffer.Add(new EdgeEntry { key = edgeKey, halfEdgeIndex = heIndex });
             }
         }
 
         public MeshData Build(Allocator allocator)
         {
+            // Populate edge map from buffer using parallel job
+            PopulateEdgeMap();
+            
             // Connect twins
             ConnectTwins();
 
@@ -211,27 +220,55 @@ namespace HalfEdgeMesh2
             halfEdges.Clear();
             faces.Clear();
             edgeMap.Clear();
+            edgeBuffer.Clear();
+        }
+
+        void PopulateEdgeMap()
+        {
+            if (edgeBuffer.Length == 0) return;
+
+            var job = new PopulateEdgeMapJob
+            {
+                edgeBuffer = edgeBuffer.AsArray(),
+                edgeMap = edgeMap
+            };
+
+            var batchSize = math.max(32, edgeBuffer.Length / (global::Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount * 8));
+            var handle = job.Schedule(edgeBuffer.Length, batchSize);
+            handle.Complete();
         }
 
         void ConnectTwins()
         {
             var keys = edgeMap.GetKeyArray(Allocator.TempJob);
-            var edgeMapReadOnly = edgeMap.AsReadOnly();
 
             var job = new ConnectTwinsJob
             {
                 keys = keys,
-                edgeMap = edgeMapReadOnly,
+                edgeMap = edgeMap.AsReadOnly(),
                 halfEdges = halfEdges
             };
 
             // Use smaller batch size for better load balancing
             // Smaller batches help when job execution times vary due to hash collisions
-            var batchSize = math.max(16, keys.Length / (global::Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount * 8));
+            var batchSize = math.max(32, keys.Length / (global::Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount * 8));
             var handle = job.Schedule(keys.Length, batchSize);
             handle.Complete();
 
             keys.Dispose();
+        }
+
+        [BurstCompile]
+        struct PopulateEdgeMapJob : IJobParallelFor
+        {
+            [ReadOnly] public NativeArray<EdgeEntry> edgeBuffer;
+            [NativeDisableParallelForRestriction] public EdgeHashMap edgeMap;
+
+            public void Execute(int index)
+            {
+                var entry = edgeBuffer[index];
+                edgeMap.TryAdd(entry.key, entry.halfEdgeIndex);
+            }
         }
 
         [BurstCompile]
