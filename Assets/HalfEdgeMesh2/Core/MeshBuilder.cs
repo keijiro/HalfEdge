@@ -11,14 +11,17 @@ namespace HalfEdgeMesh2
         NativeList<Vertex> vertices;
         NativeList<HalfEdge> halfEdges;
         NativeList<Face> faces;
-        NativeHashMap<long, int> edgeMap;
+        EdgeHashMap edgeMap;
 
         public MeshBuilder(Allocator allocator, int initialCapacity = 16)
         {
             vertices = new NativeList<Vertex>(initialCapacity, allocator);
             halfEdges = new NativeList<HalfEdge>(initialCapacity * 4, allocator); // 4 half-edges per vertex for quad-dominant meshes
             faces = new NativeList<Face>(initialCapacity, allocator); // 1 face per vertex for quad meshes
-            edgeMap = new NativeHashMap<long, int>(initialCapacity * 4, allocator); // Same as half-edges count
+            var capacity = initialCapacity * 8; // Increased safety margin to prevent infinite loops
+            // Ensure power of 2 for fast modulo
+            capacity = capacity <= 16 ? 16 : (capacity - 1) | ((capacity - 1) >> 1) | ((capacity - 1) >> 2) | ((capacity - 1) >> 4) | ((capacity - 1) >> 8) | ((capacity - 1) >> 16); capacity++;
+            edgeMap = new EdgeHashMap(capacity, allocator);
         }
 
         public void Dispose()
@@ -110,7 +113,7 @@ namespace HalfEdgeMesh2
 
         [BurstCompile]
         static void AddFaceTriangleBurst(int v0, int v1, int v2, int faceIndex, int firstHalfEdge,
-            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref NativeHashMap<long, int> edgeMap)
+            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref EdgeHashMap edgeMap)
         {
             // Create half-edges for triangle
             for (var i = 0; i < 3; i++)
@@ -145,7 +148,7 @@ namespace HalfEdgeMesh2
 
         [BurstCompile]
         static void AddFaceQuadBurst(int v0, int v1, int v2, int v3, int faceIndex, int firstHalfEdge,
-            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref NativeHashMap<long, int> edgeMap)
+            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref EdgeHashMap edgeMap)
         {
             // Create half-edges for quad
             for (var i = 0; i < 4; i++)
@@ -221,7 +224,7 @@ namespace HalfEdgeMesh2
         }
 
         [BurstCompile]
-        static void ConnectTwinsBurst(in NativeArray<long> keys, ref NativeHashMap<long, int> edgeMap, ref NativeList<HalfEdge> halfEdges)
+        static void ConnectTwinsBurst(in NativeArray<long> keys, ref EdgeHashMap edgeMap, ref NativeList<HalfEdge> halfEdges)
         {
             for (var i = 0; i < keys.Length; i++)
             {

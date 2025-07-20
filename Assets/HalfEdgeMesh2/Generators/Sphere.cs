@@ -13,14 +13,21 @@ namespace HalfEdgeMesh2.Generators
         public static MeshData Generate(float radius, int2 segments, Allocator allocator)
         {
             var clampedSegments = math.max(segments, 3);
-            
+
             var longitudeSegments = clampedSegments.x;
             var latitudeSegments = clampedSegments.y;
-            
-            // Calculate estimated vertex count for initial capacity
-            // Sphere has (lat+1) * (lon+1) vertices
-            var totalVertices = (latitudeSegments + 1) * (longitudeSegments + 1);
-            using var builder = new MeshBuilder(Allocator.Temp, totalVertices);
+
+            // Calculate estimated capacity more accurately
+            // For a sphere mesh, estimate unique edges more precisely
+            var vertexCount = (latitudeSegments + 1) * (longitudeSegments + 1);
+
+            // Horizontal edges: lat * (lon+1) at each latitude level
+            var horizontalEdges = latitudeSegments * (longitudeSegments + 1);
+            // Vertical edges: (lat+1) * lon connecting latitude levels
+            var verticalEdges = (latitudeSegments + 1) * longitudeSegments;
+            var uniqueEdges = horizontalEdges + verticalEdges;
+
+            using var builder = new MeshBuilder(Allocator.Temp, uniqueEdges);
 
             // Generate vertices
             using (s_GenerateVerticesMarker.Auto())
