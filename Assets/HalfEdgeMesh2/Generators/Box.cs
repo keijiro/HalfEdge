@@ -1,11 +1,15 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.Profiling;
 
 namespace HalfEdgeMesh2.Generators
 {
     public static class Box
     {
+        static readonly ProfilerMarker s_CreateVertexGridMarker = new ProfilerMarker("Box.CreateVertexGrid");
+        static readonly ProfilerMarker s_CreateFacesMarker = new ProfilerMarker("Box.CreateFaces");
+        static readonly ProfilerMarker s_BuildMeshMarker = new ProfilerMarker("Box.BuildMesh");
         public static MeshData Generate(float3 size, int3 segments, Allocator allocator)
         {
             var clampedSegments = math.max(segments, 1);
@@ -16,17 +20,29 @@ namespace HalfEdgeMesh2.Generators
             var hd = size.z * 0.5f;
 
             // Create vertices grid for the entire box
-            var vertexGrid = CreateVertexGrid(ref builder, size, clampedSegments);
+            VertexGrid vertexGrid;
+            using (s_CreateVertexGridMarker.Auto())
+            {
+                vertexGrid = CreateVertexGrid(ref builder, size, clampedSegments);
+            }
 
             // Create faces using shared vertices
-            CreateFrontFace(ref builder, ref vertexGrid, clampedSegments);
-            CreateBackFace(ref builder, ref vertexGrid, clampedSegments);
-            CreateLeftFace(ref builder, ref vertexGrid, clampedSegments);
-            CreateRightFace(ref builder, ref vertexGrid, clampedSegments);
-            CreateTopFace(ref builder, ref vertexGrid, clampedSegments);
-            CreateBottomFace(ref builder, ref vertexGrid, clampedSegments);
+            using (s_CreateFacesMarker.Auto())
+            {
+                CreateFrontFace(ref builder, ref vertexGrid, clampedSegments);
+                CreateBackFace(ref builder, ref vertexGrid, clampedSegments);
+                CreateLeftFace(ref builder, ref vertexGrid, clampedSegments);
+                CreateRightFace(ref builder, ref vertexGrid, clampedSegments);
+                CreateTopFace(ref builder, ref vertexGrid, clampedSegments);
+                CreateBottomFace(ref builder, ref vertexGrid, clampedSegments);
+            }
 
-            var result = builder.Build(allocator);
+            MeshData result;
+            using (s_BuildMeshMarker.Auto())
+            {
+                result = builder.Build(allocator);
+            }
+
             builder.Dispose();
             vertexGrid.Dispose();
             return result;

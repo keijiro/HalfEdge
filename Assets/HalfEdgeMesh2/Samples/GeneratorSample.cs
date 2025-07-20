@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.Profiling;
 using UnityEngine;
 using HalfEdgeMesh2.Generators;
 using HalfEdgeMesh2.Unity;
@@ -25,6 +26,10 @@ namespace HalfEdgeMesh2.Samples
         [SerializeField] int2 sphereSegments = new int2(16, 12);
 
         MeshFilter meshFilter;
+
+        // Profiler markers
+        static readonly ProfilerMarker s_GenerateMeshMarker = new ProfilerMarker("GeneratorSample.GenerateMesh");
+        static readonly ProfilerMarker s_UpdateUnityMeshMarker = new ProfilerMarker("GeneratorSample.UpdateUnityMesh");
         Mesh generatedMesh;
         bool needsMeshInitialization;
         GeneratorType lastGeneratorType;
@@ -67,7 +72,7 @@ namespace HalfEdgeMesh2.Samples
                 needsMeshInitialization = false;
             }
 
-            var needsUpdate = HasChanges();
+            bool needsUpdate = HasChanges();
 
             // Only animate in play mode
             var shouldAnimate = animateSize && Application.isPlaying;
@@ -103,36 +108,42 @@ namespace HalfEdgeMesh2.Samples
 
         void GenerateMesh()
         {
-            MeshData meshData;
-
-            switch (generatorType)
+            using (s_GenerateMeshMarker.Auto())
             {
-                case GeneratorType.Box:
-                    meshData = GenerateBox();
-                    break;
-                case GeneratorType.Sphere:
-                    meshData = GenerateSphere();
-                    break;
-                default:
-                    return;
-            }
+                MeshData meshData;
 
-            try
-            {
-                // Ensure we have a managed mesh
-                if (generatedMesh == null)
+                switch (generatorType)
                 {
-                    generatedMesh = new Mesh();
-                    generatedMesh.name = "Generated Mesh";
-                    generatedMesh.hideFlags = HideFlags.DontSave;
-                    meshFilter.sharedMesh = generatedMesh;
+                    case GeneratorType.Box:
+                        meshData = GenerateBox();
+                        break;
+                    case GeneratorType.Sphere:
+                        meshData = GenerateSphere();
+                        break;
+                    default:
+                        return;
                 }
 
-                meshData.UpdateUnityMesh(generatedMesh, normalMode);
-            }
-            finally
-            {
-                meshData.Dispose();
+                try
+                {
+                    // Ensure we have a managed mesh
+                    if (generatedMesh == null)
+                    {
+                        generatedMesh = new Mesh();
+                        generatedMesh.name = "Generated Mesh";
+                        generatedMesh.hideFlags = HideFlags.DontSave;
+                        meshFilter.sharedMesh = generatedMesh;
+                    }
+
+                    using (s_UpdateUnityMeshMarker.Auto())
+                    {
+                        meshData.UpdateUnityMesh(generatedMesh, normalMode);
+                    }
+                }
+                finally
+                {
+                    meshData.Dispose();
+                }
             }
         }
 
