@@ -96,7 +96,7 @@ namespace HalfEdgeMesh2
 
                 // Store edge mapping for twin connection
                 var edgeKey = PackEdge(v0, v1);
-                edgeMap[edgeKey] = heIndex;
+                edgeMap.Add(edgeKey, heIndex);
             }
 
             // Create face
@@ -139,7 +139,7 @@ namespace HalfEdgeMesh2
 
                 // Store edge mapping
                 var edgeKey = PackEdge(currentV, nextV);
-                edgeMap[edgeKey] = heIndex;
+                edgeMap.Add(edgeKey, heIndex);
             }
         }
 
@@ -174,7 +174,7 @@ namespace HalfEdgeMesh2
 
                 // Store edge mapping
                 var edgeKey = PackEdge(currentV, nextV);
-                edgeMap[edgeKey] = heIndex;
+                edgeMap.Add(edgeKey, heIndex);
             }
         }
 
