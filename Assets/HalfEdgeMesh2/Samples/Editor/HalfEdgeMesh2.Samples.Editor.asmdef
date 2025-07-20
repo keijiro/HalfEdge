@@ -1,0 +1,18 @@
+{
+    "name": "HalfEdgeMesh2.Samples.Editor",
+    "rootNamespace": "",
+    "references": [
+        "HalfEdgeMesh2"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

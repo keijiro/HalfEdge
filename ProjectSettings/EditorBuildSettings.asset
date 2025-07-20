@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/HalfEdgeMesh.unity
-    guid: ff5702dfe30c34fa2a680f20ba104712
+    path: Assets/HalfEdgeMesh2.unity
+    guid: 92ca18d7f2eda40a3a6af2542ac6cf68
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
