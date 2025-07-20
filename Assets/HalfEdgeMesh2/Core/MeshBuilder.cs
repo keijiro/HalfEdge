@@ -1,6 +1,9 @@
 using System;
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
 using Unity.Mathematics;
 
 namespace HalfEdgeMesh2
@@ -212,23 +215,35 @@ namespace HalfEdgeMesh2
 
         void ConnectTwins()
         {
-            var keys = edgeMap.GetKeyArray(Allocator.Temp);
-            try
+            var keys = edgeMap.GetKeyArray(Allocator.TempJob);
+            var edgeMapReadOnly = edgeMap.AsReadOnly();
+
+            var job = new ConnectTwinsJob
             {
-                ConnectTwinsBurst(keys, ref edgeMap, ref halfEdges);
-            }
-            finally
-            {
-                keys.Dispose();
-            }
+                keys = keys,
+                edgeMap = edgeMapReadOnly,
+                halfEdges = halfEdges
+            };
+
+            // Use smaller batch size for better load balancing
+            // Smaller batches help when job execution times vary due to hash collisions
+            var batchSize = math.max(16, keys.Length / (global::Unity.Jobs.LowLevel.Unsafe.JobsUtility.JobWorkerCount * 8));
+            var handle = job.Schedule(keys.Length, batchSize);
+            handle.Complete();
+
+            keys.Dispose();
         }
 
         [BurstCompile]
-        static void ConnectTwinsBurst(in NativeArray<long> keys, ref EdgeHashMap edgeMap, ref NativeList<HalfEdge> halfEdges)
+        struct ConnectTwinsJob : IJobParallelFor
         {
-            for (var i = 0; i < keys.Length; i++)
+            [ReadOnly] public NativeArray<long> keys;
+            [ReadOnly] public EdgeHashMapReadOnly edgeMap;
+            [NativeDisableParallelForRestriction] public NativeList<HalfEdge> halfEdges;
+
+            public void Execute(int index)
             {
-                var edgeKey = keys[i];
+                var edgeKey = keys[index];
                 var heIndex = edgeMap[edgeKey];
 
                 // Unpack edge
@@ -244,6 +259,9 @@ namespace HalfEdgeMesh2
                     halfEdges[heIndex] = he;
                 }
             }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static long PackEdge(int v0, int v1) => ((long)v0 << 32) | (uint)v1;
         }
     }
 }

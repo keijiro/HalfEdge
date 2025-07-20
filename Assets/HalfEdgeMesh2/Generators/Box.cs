@@ -25,7 +25,7 @@ namespace HalfEdgeMesh2.Generators
             var internalEdgesZ = (clampedSegments.x + 1) * (clampedSegments.y + 1) * clampedSegments.z;
             var uniqueEdges = internalEdgesX + internalEdgesY + internalEdgesZ;
 
-            var builder = new MeshBuilder(Allocator.Temp, uniqueEdges);
+            var builder = new MeshBuilder(Allocator.TempJob, uniqueEdges);
 
             var hw = size.x * 0.5f;
             var hh = size.y * 0.5f;
@@ -81,7 +81,7 @@ namespace HalfEdgeMesh2.Generators
 
         static VertexGrid CreateVertexGrid(ref MeshBuilder builder, float3 size, int3 segments)
         {
-            var grid = new VertexGrid(segments.x + 1, segments.y + 1, segments.z + 1, Allocator.Temp);
+            var grid = new VertexGrid(segments.x + 1, segments.y + 1, segments.z + 1, Allocator.TempJob);
             var hw = size.x * 0.5f;
             var hh = size.y * 0.5f;
             var hd = size.z * 0.5f;

@@ -29,7 +29,7 @@ namespace HalfEdgeMesh2
         [BurstCompile]
         public static void ComputeVertexNormals(ref MeshData mesh, ref NativeArray<float3> normals)
         {
-            var faceNormals = new NativeArray<float3>(mesh.faceCount, Allocator.Temp);
+            var faceNormals = new NativeArray<float3>(mesh.faceCount, Allocator.TempJob);
             ComputeFaceNormals(ref mesh, ref faceNormals);
 
             for (var i = 0; i < mesh.vertexCount; i++)

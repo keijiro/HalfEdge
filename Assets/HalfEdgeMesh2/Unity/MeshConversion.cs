@@ -190,7 +190,7 @@ namespace HalfEdgeMesh2.Unity
         {
             // Collect face vertices
             var faceVertexCount = CountFaceVertices(ref meshData, startHalfEdge);
-            var faceVertices = new NativeArray<Vector3>(faceVertexCount, Allocator.Temp);
+            var faceVertices = new NativeArray<Vector3>(faceVertexCount, Allocator.TempJob);
 
             var currentHe = startHalfEdge;
             for (var i = 0; i < faceVertexCount; i++)

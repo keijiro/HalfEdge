@@ -27,7 +27,7 @@ namespace HalfEdgeMesh2.Generators
             var verticalEdges = (latitudeSegments + 1) * longitudeSegments;
             var uniqueEdges = horizontalEdges + verticalEdges;
 
-            using var builder = new MeshBuilder(Allocator.Temp, uniqueEdges);
+            using var builder = new MeshBuilder(Allocator.TempJob, uniqueEdges);
 
             // Generate vertices
             using (s_GenerateVerticesMarker.Auto())
