@@ -13,12 +13,12 @@ namespace HalfEdgeMesh2
         NativeList<Face> faces;
         NativeHashMap<long, int> edgeMap;
 
-        public MeshBuilder(Allocator allocator)
+        public MeshBuilder(Allocator allocator, int initialCapacity = 16)
         {
-            vertices = new NativeList<Vertex>(allocator);
-            halfEdges = new NativeList<HalfEdge>(allocator);
-            faces = new NativeList<Face>(allocator);
-            edgeMap = new NativeHashMap<long, int>(16, allocator);
+            vertices = new NativeList<Vertex>(initialCapacity, allocator);
+            halfEdges = new NativeList<HalfEdge>(initialCapacity * 4, allocator); // 4 half-edges per vertex for quad-dominant meshes
+            faces = new NativeList<Face>(initialCapacity, allocator); // 1 face per vertex for quad meshes
+            edgeMap = new NativeHashMap<long, int>(initialCapacity * 4, allocator); // Same as half-edges count
         }
 
         public void Dispose()

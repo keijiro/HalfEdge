@@ -13,7 +13,11 @@ namespace HalfEdgeMesh2.Generators
         public static MeshData Generate(float3 size, int3 segments, Allocator allocator)
         {
             var clampedSegments = math.max(segments, 1);
-            var builder = new MeshBuilder(Allocator.Temp);
+            
+            // Calculate estimated vertex count for initial capacity
+            // Box has 6 faces, each subdivided into segments
+            var totalVertices = (clampedSegments.x + 1) * (clampedSegments.y + 1) * (clampedSegments.z + 1);
+            var builder = new MeshBuilder(Allocator.Temp, totalVertices);
 
             var hw = size.x * 0.5f;
             var hh = size.y * 0.5f;
