@@ -52,27 +52,31 @@ namespace HalfEdgeMesh2
             return index;
         }
 
-        public int AddFace(int v0, int v1, int v2)
+        public unsafe int AddFace(int v0, int v1, int v2)
         {
             var faceIndex = faces.Length;
             var firstHalfEdge = halfEdges.Length;
 
-            AddFaceInternal(stackalloc int[] { v0, v1, v2 }, faceIndex, firstHalfEdge);
+            var indices = stackalloc int[] { v0, v1, v2 };
+            AddFaceInternalBurst(indices, 3, faceIndex, firstHalfEdge,
+                                ref vertices, ref halfEdges, ref edgeBuffer);
             faces.Add(new Face(firstHalfEdge));
             return faceIndex;
         }
 
-        public int AddFace(int v0, int v1, int v2, int v3)
+        public unsafe int AddFace(int v0, int v1, int v2, int v3)
         {
             var faceIndex = faces.Length;
             var firstHalfEdge = halfEdges.Length;
 
-            AddFaceInternal(stackalloc int[] { v0, v1, v2, v3 }, faceIndex, firstHalfEdge);
+            var indices = stackalloc int[] { v0, v1, v2, v3 };
+            AddFaceInternalBurst(indices, 4, faceIndex, firstHalfEdge,
+                                ref vertices, ref halfEdges, ref edgeBuffer);
             faces.Add(new Face(firstHalfEdge));
             return faceIndex;
         }
 
-        public int AddFace(ReadOnlySpan<int> vertexIndices)
+        public unsafe int AddFace(ReadOnlySpan<int> vertexIndices)
         {
             if (vertexIndices.Length < 3)
                 throw new ArgumentException("Face must have at least 3 vertices");
@@ -80,7 +84,11 @@ namespace HalfEdgeMesh2
             var faceIndex = faces.Length;
             var firstHalfEdge = halfEdges.Length;
 
-            AddFaceInternal(vertexIndices, faceIndex, firstHalfEdge);
+            fixed (int* ptr = vertexIndices)
+            {
+                AddFaceInternalBurst(ptr, vertexIndices.Length, faceIndex, firstHalfEdge,
+                                    ref vertices, ref halfEdges, ref edgeBuffer);
+            }
             faces.Add(new Face(firstHalfEdge));
             return faceIndex;
         }
@@ -113,20 +121,22 @@ namespace HalfEdgeMesh2
             edgeBuffer.Clear();
         }
 
-        // Core face creation logic shared by all AddFace variants
-        void AddFaceInternal(ReadOnlySpan<int> vertexIndices, int faceIndex, int firstHalfEdge)
+        // Burst-compatible unified face creation logic
+        [BurstCompile]
+        static unsafe void AddFaceInternalBurst(int* vertexIndices, int vertexCount, int faceIndex, int firstHalfEdge,
+            ref NativeList<Vertex> vertices, ref NativeList<HalfEdge> halfEdges, ref NativeList<EdgeEntry> edgeBuffer)
         {
-            for (var i = 0; i < vertexIndices.Length; i++)
+            for (var i = 0; i < vertexCount; i++)
             {
                 var v0 = vertexIndices[i];
-                var v1 = vertexIndices[(i + 1) % vertexIndices.Length];
+                var v1 = vertexIndices[(i + 1) % vertexCount];
                 var heIndex = halfEdges.Length;
 
                 var he = new HalfEdge
                 {
                     vertex = v0,
                     face = faceIndex,
-                    next = firstHalfEdge + ((i + 1) % vertexIndices.Length),
+                    next = firstHalfEdge + ((i + 1) % vertexCount),
                     twin = -1
                 };
 
