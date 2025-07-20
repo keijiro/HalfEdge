@@ -245,7 +245,7 @@ namespace HalfEdgeMesh2
             var job = new ConnectTwinsJob
             {
                 keys = keys,
-                edgeMap = edgeMap.AsReadOnly(),
+                edgeMap = edgeMap,
                 halfEdges = halfEdges
             };
 
@@ -275,13 +275,14 @@ namespace HalfEdgeMesh2
         struct ConnectTwinsJob : IJobParallelFor
         {
             [ReadOnly] public NativeArray<long> keys;
-            [ReadOnly] public EdgeHashMapReadOnly edgeMap;
+            [ReadOnly] public EdgeHashMap edgeMap;
             [NativeDisableParallelForRestriction] public NativeList<HalfEdge> halfEdges;
 
             public void Execute(int index)
             {
                 var edgeKey = keys[index];
-                var heIndex = edgeMap[edgeKey];
+                if (!edgeMap.TryGetValue(edgeKey, out var heIndex))
+                    return;
 
                 // Unpack edge
                 var v0 = (int)(edgeKey >> 32);
