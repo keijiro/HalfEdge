@@ -3,7 +3,10 @@
 ![Screenshot](https://github.com/user-attachments/assets/541aa20a-aacb-4f33-bfed-f408ece4b73d)
 
 **HalfEdge** is an experimental attempt to develop an optimized Unity C# package
-with the help of coding agents like Claude Code and Gemini CLI.
+with the help of coding agents like [Claude Code] and [Gemini CLI].
+
+[Claude Code]: https://www.anthropic.com/claude-code
+[Gemini CLI]: https://blog.google/technology/developers/introducing-gemini-cli-open-source-ai-agent/
 
 For this experiment, I chose to implement a Half-Edge data structure library,
 inspired by wblut’s [HE_Mesh]. I chose it as a subject because it's practical,
