@@ -52,7 +52,7 @@ optimized, zero-GC C# components for Unity. Yay.
 Next, I started porting over the generator and modifier components. But that's
 when my motivation dropped. These parts brought new issues and still needed my
 input to optimize properly. While it's easier than writing everything myself, I
-now clearly saw the time and effort involved — and it’s definitely not "free".  
+now clearly saw the time and effort involved — and it’s definitely not "free".
 So I paused the project there.
 
 ## Lessons Learned
