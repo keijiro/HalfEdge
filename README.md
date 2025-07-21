@@ -1,5 +1,7 @@
 # HalfEdge
 
+![Screenshot](https://github.com/user-attachments/assets/541aa20a-aacb-4f33-bfed-f408ece4b73d)
+
 **HalfEdge** is an experimental attempt to develop an optimized Unity C# package
 with the help of coding agents like Claude Code and Gemini CLI.
 
@@ -25,6 +27,8 @@ obvious to the human eye but difficult to catch with automated unit tests. You
 can ask the agent to write specific unit tests, and it sometimes succeeds — but
 other times, it adds meaningless ones.
 
+![Screenshot](https://github.com/user-attachments/assets/b1634522-0eba-42f4-8637-f60647f2914d)
+
 After resolving a number of minor bugs, the initial implementation
 (HalfEdgeMesh) was done. I then tried to optimize it, but the changes required
 were too extensive for an incremental approach. Also, longer tasks tend to fail
@@ -39,6 +43,8 @@ Jobs System. With some human supervision, we successfully produced a suite of
 optimized, zero-GC C# components for Unity. Yay.
 
 [new design document]: /HalfEdgeMesh2_Design.md
+
+![Screenshot](https://github.com/user-attachments/assets/0240bce3-bc77-42ae-ac0d-cf503a6b06a2)
 
 Next, I started porting over the generator and modifier components. But that's
 when my motivation dropped. These parts brought new issues and still needed my
