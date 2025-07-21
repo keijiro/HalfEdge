@@ -35,8 +35,8 @@ other times, it adds meaningless ones.
 After resolving a number of minor bugs, the initial implementation
 (HalfEdgeMesh) was done. I then tried to optimize it, but the changes required
 were too extensive for an incremental approach. Also, longer tasks tend to fail
-more easily — especially with more affordable models like Sonnet. So I pivoted
-to building a new version from scratch: HalfEdgeMesh2.
+more easily — especially with more affordable models like Claude Sonnet. So I
+pivoted to building a new version from scratch: HalfEdgeMesh2.
 
 In HalfEdgeMesh2, I adopted an "optimize-first" strategy. I started by writing a
 [new design document] and then implemented only the core modules based on it. I
