@@ -15,6 +15,11 @@ namespace HalfEdgeMesh2.Editor
         SerializedProperty sphereRadius;
         SerializedProperty sphereSegments;
 
+        // Modifier properties
+        SerializedProperty applySmooth;
+        SerializedProperty smoothingFactor;
+        SerializedProperty smoothingIterations;
+
         void OnEnable()
         {
             generatorType = serializedObject.FindProperty("generatorType");
@@ -24,6 +29,11 @@ namespace HalfEdgeMesh2.Editor
             boxSegments = serializedObject.FindProperty("boxSegments");
             sphereRadius = serializedObject.FindProperty("sphereRadius");
             sphereSegments = serializedObject.FindProperty("sphereSegments");
+
+            // Find modifier properties
+            applySmooth = serializedObject.FindProperty("applySmooth");
+            smoothingFactor = serializedObject.FindProperty("smoothingFactor");
+            smoothingIterations = serializedObject.FindProperty("smoothingIterations");
         }
 
         public override void OnInspectorGUI()
@@ -57,6 +67,21 @@ namespace HalfEdgeMesh2.Editor
                     EditorGUILayout.PropertyField(sphereRadius);
                     EditorGUILayout.PropertyField(sphereSegments);
                     break;
+            }
+
+            EditorGUILayout.Space();
+
+            // Modifier Settings
+            EditorGUILayout.LabelField("Modifiers", EditorStyles.boldLabel);
+            
+            // Smooth settings
+            EditorGUILayout.PropertyField(applySmooth);
+            if (applySmooth.boolValue)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(smoothingFactor);
+                EditorGUILayout.PropertyField(smoothingIterations);
+                EditorGUI.indentLevel--;
             }
 
             serializedObject.ApplyModifiedProperties();

@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using Unity.Profiling;
 using UnityEngine;
 using HalfEdgeMesh2.Generators;
+using HalfEdgeMesh2.Modifiers;
 using HalfEdgeMesh2.Unity;
 
 namespace HalfEdgeMesh2.Samples
@@ -25,6 +26,12 @@ namespace HalfEdgeMesh2.Samples
         [SerializeField] float sphereRadius = 1.0f;
         [SerializeField] int2 sphereSegments = new int2(16, 12);
 
+        [Header("Modifiers")]
+        [SerializeField] bool applySmooth = false;
+        [SerializeField] float smoothingFactor = 0.5f;
+        [SerializeField] int smoothingIterations = 1;
+
+
         MeshFilter meshFilter;
 
         // Profiler markers
@@ -45,6 +52,11 @@ namespace HalfEdgeMesh2.Samples
 
         // Animation state
         bool lastAnimateSize;
+
+        // Modifier state
+        bool lastApplySmooth;
+        float lastSmoothingFactor;
+        int lastSmoothingIterations;
 
         void Start()
         {
@@ -92,7 +104,10 @@ namespace HalfEdgeMesh2.Samples
                    !boxSegments.Equals(lastBoxSegments) ||
                    sphereRadius != lastSphereRadius ||
                    !sphereSegments.Equals(lastSphereSegments) ||
-                   animateSize != lastAnimateSize;
+                   animateSize != lastAnimateSize ||
+                   applySmooth != lastApplySmooth ||
+                   smoothingFactor != lastSmoothingFactor ||
+                   smoothingIterations != lastSmoothingIterations;
         }
 
         void UpdateState()
@@ -104,6 +119,9 @@ namespace HalfEdgeMesh2.Samples
             lastSphereRadius = sphereRadius;
             lastSphereSegments = sphereSegments;
             lastAnimateSize = animateSize;
+            lastApplySmooth = applySmooth;
+            lastSmoothingFactor = smoothingFactor;
+            lastSmoothingIterations = smoothingIterations;
         }
 
         void GenerateMesh()
@@ -123,6 +141,9 @@ namespace HalfEdgeMesh2.Samples
                     default:
                         return;
                 }
+
+                // Apply modifiers
+                meshData = ApplyModifiers(meshData);
 
                 try
                 {
@@ -186,6 +207,19 @@ namespace HalfEdgeMesh2.Samples
             }
         }
 
+        MeshData ApplyModifiers(MeshData inputMesh)
+        {
+            var currentMesh = inputMesh;
+
+            // Apply smoothing modifier
+            if (applySmooth && smoothingFactor > 0 && smoothingIterations > 0)
+            {
+                SmoothVertices.Apply(currentMesh, smoothingFactor, smoothingIterations);
+            }
+
+            return currentMesh;
+        }
+
         void OnValidate()
         {
             // Clamp values to valid ranges
@@ -193,6 +227,8 @@ namespace HalfEdgeMesh2.Samples
             sphereSegments = math.max(sphereSegments, 3);
             sphereRadius = math.max(sphereRadius, 0.01f);
             boxSize = math.max(boxSize, 0.01f);
+            smoothingFactor = math.clamp(smoothingFactor, 0f, 1f);
+            smoothingIterations = math.max(smoothingIterations, 1);
 
             // Schedule mesh initialization for next Update
             needsMeshInitialization = true;
