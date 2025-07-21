@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e7c849ead32b479a96103252c203e17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generatorType: 0
+  generatorType: 1
   normalMode: 1
   animateSize: 1
   boxSize:
@@ -233,7 +233,7 @@ MonoBehaviour:
   sphereSegments:
     x: 50
     y: 50
-  applySmooth: 1
+  applySmooth: 0
   smoothingFactor: 1
   smoothingIterations: 4
 --- !u!1 &231048555

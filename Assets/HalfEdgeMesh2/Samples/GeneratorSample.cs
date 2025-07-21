@@ -36,6 +36,8 @@ namespace HalfEdgeMesh2.Samples
 
         // Profiler markers
         static readonly ProfilerMarker s_GenerateMeshMarker = new ProfilerMarker("GeneratorSample.GenerateMesh");
+        static readonly ProfilerMarker s_GeneratorMarker = new ProfilerMarker("GeneratorSample.Generator");
+        static readonly ProfilerMarker s_ModifierMarker = new ProfilerMarker("GeneratorSample.Modifier");
         static readonly ProfilerMarker s_UpdateUnityMeshMarker = new ProfilerMarker("GeneratorSample.UpdateUnityMesh");
         Mesh generatedMesh;
         bool needsMeshInitialization;
@@ -130,20 +132,27 @@ namespace HalfEdgeMesh2.Samples
             {
                 MeshData meshData;
 
-                switch (generatorType)
+                // Generate mesh with Generator profiler marker
+                using (s_GeneratorMarker.Auto())
                 {
-                    case GeneratorType.Box:
-                        meshData = GenerateBox();
-                        break;
-                    case GeneratorType.Sphere:
-                        meshData = GenerateSphere();
-                        break;
-                    default:
-                        return;
+                    switch (generatorType)
+                    {
+                        case GeneratorType.Box:
+                            meshData = GenerateBox();
+                            break;
+                        case GeneratorType.Sphere:
+                            meshData = GenerateSphere();
+                            break;
+                        default:
+                            return;
+                    }
                 }
 
-                // Apply modifiers
-                meshData = ApplyModifiers(meshData);
+                // Apply modifiers with Modifier profiler marker
+                using (s_ModifierMarker.Auto())
+                {
+                    meshData = ApplyModifiers(meshData);
+                }
 
                 try
                 {
